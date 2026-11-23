@@ -14,28 +14,32 @@
   /* ================= БИОЛОГИЧЕСКИЙ ПОРТРЕТ ================= */
   (function portrait() {
     const wall = $("#wall"), card = $("#ptCard"); if (!wall) return;
-    wall.innerHTML = ZOO.portrait.map((a, i) => `<button class="tile" type="button" data-i="${i}" aria-label="${a.name}"><img src="${a.photo}" alt="" loading="lazy" style="object-position:${a.pos}"><span>${a.name}</span></button>`).join("");
+    /* фото целиком: вписанное фото поверх размытой копии */
+    const pic = (a, cls, alt) => `<span class="pic ${cls || ""}"><img class="pic__bg" src="${a.photo}" alt="" aria-hidden="true" loading="lazy"><img class="pic__img" src="${a.photo}" alt="${alt || ""}" loading="lazy"></span>`;
+    wall.innerHTML = ZOO.portrait.map((a, i) => `<button class="tile" type="button" data-i="${i}" aria-label="${a.name}">${pic(a)}<span class="tile__name">${a.name}</span></button>`).join("");
     const tiles = $$(".tile", wall), opened = new Set();
-    function show(i) {
+    function show(i, fromTap) {
       const a = ZOO.portrait[i];
       tiles.forEach((t) => t.classList.toggle("is-current", +t.dataset.i === i));
       tiles[i].classList.add("is-open"); opened.add(i);
-      card.innerHTML = `<img class="pt__photo" src="${a.photo}" alt="${a.name}" style="object-position:${a.pos}">
+      card.innerHTML = `${pic(a, "pt__photo", a.name)}
         <div class="pt__info"><p class="pt__name">${a.name}<small>${a.group}</small></p><p class="pt__power"><b>Суперсила.</b> ${a.power}</p><p class="pt__you">Если ты выбрал это животное: ${a.you.charAt(0).toLowerCase() + a.you.slice(1)}</p></div>`;
       $("#beastCount").textContent = `Открыто ${opened.size} из ${tiles.length}`;
       if (opened.size >= 3) $("#wallMoral").hidden = false;
       Sound.play("flip");
+      /* на телефоне карточка выше плиток: показываем её */
+      if (App.phone && fromTap) card.scrollIntoView({ block: "nearest", behavior: reduced ? "auto" : "smooth" });
     }
-    wall.addEventListener("click", (e) => { const t = e.target.closest(".tile"); if (t) show(+t.dataset.i); });
+    wall.addEventListener("click", (e) => { const t = e.target.closest(".tile"); if (t) show(+t.dataset.i, true); });
     let busy = false;
     $("#randomBeast").addEventListener("click", () => {
       if (busy) return; busy = true;
       const pool = tiles.filter((t) => !t.classList.contains("is-open"));
       const target = (pool.length ? pool : tiles)[(Math.random() * (pool.length || tiles.length)) | 0];
-      let n = reduced ? 0 : 11, prev;
+      let n = 11, prev;
       (function hop() {
         if (prev) prev.classList.remove("is-hop");
-        if (n-- <= 0) { show(+target.dataset.i); busy = false; return; }
+        if (n-- <= 0) { show(+target.dataset.i, true); busy = false; return; }
         prev = tiles[(Math.random() * tiles.length) | 0]; prev.classList.add("is-hop"); Sound.play("tick");
         setTimeout(hop, 70 + (11 - n) * 14);
       })();
@@ -65,6 +69,7 @@
       const panel = tab.parentElement; if (panel.classList.contains("is-open")) return;
       $$(".acc__panel", box).forEach((p) => { p.classList.toggle("is-open", p === panel); $(".acc__tab", p).setAttribute("aria-expanded", p === panel); });
       Sound.play("flip");
+      if (App.phone) requestAnimationFrame(() => panel.scrollIntoView({ block: "nearest", behavior: reduced ? "auto" : "smooth" }));
     });
   })();
 
@@ -264,22 +269,55 @@
   })();
 
   /* ================= СТАНЬ ХИЩНИКОМ ================= */
+  /* Щелчок или касание: хищник плывёт в эту точку, место щелчка подсвечивается.
+     Работает и при выключенной анимации в системе: это само упражнение, а не украшение. */
   (function school() {
     const cv = $("#schoolCanvas"); if (!cv) return;
-    const cx = cv.getContext("2d"), W = 1280, H = 720;
-    let fish = [], running = false, raf = 0, eaten = 0;
-    const pred = { x: 900, y: 300, tx: 900, ty: 300, vx: 0, vy: 0, user: false, last: 0, mouth: 0 };
-    const bubbles = [];
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    cv.width = W * dpr; cv.height = H * dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    const spawn = (edge) => { const a = Math.random() * Math.PI * 2; return { x: edge ? (Math.random() < 0.5 ? -20 : W + 20) : 300 + Math.random() * 800, y: 80 + Math.random() * 560, vx: Math.cos(a) * 2, vy: Math.sin(a) * 2, s: 0.85 + Math.random() * 0.5, tone: 195 + Math.random() * 40 }; };
-    fish = Array.from({ length: 110 }, () => spawn(false));
-    function step(t) {
-      if (!pred.user || t - pred.last > 2500) { pred.tx = W * (0.55 + 0.33 * Math.sin(t / 2300)); pred.ty = H * (0.5 + 0.3 * Math.sin(t / 1700 + 1)); }
-      const k = pred.user ? 0.22 : 0.06;
-      pred.vx = (pred.tx - pred.x) * k; pred.vy = (pred.ty - pred.y) * k; pred.x += pred.vx; pred.y += pred.vy;
-      pred.mouth = Math.max(0, pred.mouth - 0.08);
-      const R2 = 46 * 46, FLEE = 130;
+    const cx = cv.getContext("2d");
+    let W = 1280, H = 720, k2d = 1, fish = [], running = false, raf = 0, eaten = 0, last = 0;
+    const pred = { x: 900, y: 320, vx: 0, vy: 0, a: Math.PI, tx: null, ty: null, huntUntil: 0, mouth: 0 };
+    const bubbles = [], rings = [];
+    const CATCH = 36, FLEE = 130;
+    const spawn = (edge) => {
+      const a = Math.random() * Math.PI * 2;
+      return { x: edge ? (Math.random() < 0.5 ? -20 : W + 20) : W * (0.2 + Math.random() * 0.65), y: H * 0.12 + Math.random() * H * 0.78, vx: Math.cos(a) * 2, vy: Math.sin(a) * 2, s: 0.85 + Math.random() * 0.5, tone: 195 + Math.random() * 40 };
+    };
+    function size() {
+      const w = Math.round(cv.clientWidth), h = Math.round(cv.clientHeight);
+      if (!w || !h) return;
+      const ratio = Math.min(window.devicePixelRatio || 1, 2) * (App.phone ? 1 : App.scale);
+      const changed = Math.abs(w - W) > 40 || Math.abs(h - H) > 40 || !fish.length;
+      W = w; H = h; k2d = Math.min(ratio, 2560 / W);
+      cv.width = Math.round(W * k2d); cv.height = Math.round(H * k2d); cx.setTransform(k2d, 0, 0, k2d, 0, 0);
+      if (changed) {
+        const n = Math.max(36, Math.min(110, Math.round(110 * (W * H) / (1280 * 720))));
+        fish = Array.from({ length: n }, () => spawn(false));
+        pred.x = W * 0.7; pred.y = H * 0.45; pred.tx = null;
+      }
+      render();
+    }
+    function step(now, k) {
+      /* хищник */
+      if (pred.tx != null) {
+        const dx = pred.tx - pred.x, dy = pred.ty - pred.y, d = Math.hypot(dx, dy);
+        if (d > 6) {
+          const sp = Math.min(11, d * 0.09 + 2.5);
+          pred.vx += ((dx / d) * sp - pred.vx) * Math.min(1, 0.25 * k);
+          pred.vy += ((dy / d) * sp - pred.vy) * Math.min(1, 0.25 * k);
+        } else { pred.tx = null; pred.huntUntil = now + 1500; }
+      } else {
+        const sp = now < pred.huntUntil ? 0.6 : 1.2;
+        pred.vx += (Math.cos(now / 1500) * sp - pred.vx) * 0.03 * k;
+        pred.vy += (Math.sin(now / 2100) * sp * 0.6 - pred.vy) * 0.03 * k;
+        if (pred.x < 60) pred.vx += 0.15 * k; if (pred.x > W - 60) pred.vx -= 0.15 * k;
+        if (pred.y < 60) pred.vy += 0.15 * k; if (pred.y > H - 50) pred.vy -= 0.15 * k;
+      }
+      pred.x += pred.vx * k; pred.y += pred.vy * k;
+      if (Math.hypot(pred.vx, pred.vy) > 0.25) pred.a = Math.atan2(pred.vy, pred.vx);
+      pred.mouth = Math.max(0, pred.mouth - 0.08 * k);
+      const hunting = pred.tx != null || now < pred.huntUntil;
+      /* рыбы */
+      const R2 = 46 * 46;
       for (let i = 0; i < fish.length; i++) {
         const f = fish[i];
         let ax = 0, ay = 0, sx = 0, sy = 0, avx = 0, avy = 0, n = 0;
@@ -290,19 +328,20 @@
         if (n) { ax += (sx / n - f.x) * 0.004 + (avx / n - f.vx) * 0.06; ay += (sy / n - f.y) * 0.004 + (avy / n - f.vy) * 0.06; }
         const dxp = f.x - pred.x, dyp = f.y - pred.y, dp = Math.hypot(dxp, dyp);
         if (dp < FLEE) { const q = (FLEE - dp) / FLEE; ax += (dxp / (dp + 1)) * q * 1.1; ay += (dyp / (dp + 1)) * q * 1.1; }
-        if (f.x < 60) ax += 0.25; if (f.x > W - 60) ax -= 0.25; if (f.y < 90) ay += 0.25; if (f.y > H - 60) ay -= 0.25;
-        f.vx += ax; f.vy += ay;
+        if (f.x < 40) ax += 0.25; if (f.x > W - 40) ax -= 0.25; if (f.y < 40) ay += 0.25; if (f.y > H - 40) ay -= 0.25;
+        f.vx += ax * k; f.vy += ay * k;
         const sp = Math.hypot(f.vx, f.vy), max = dp < FLEE ? 3.6 : 2.4;
         if (sp > max) { f.vx *= max / sp; f.vy *= max / sp; } else if (sp < 1.1) { f.vx *= 1.1 / sp; f.vy *= 1.1 / sp; }
-        f.x += f.vx; f.y += f.vy;
-        if (pred.user && dp < 34) {
+        f.x += f.vx * k; f.y += f.vy * k;
+        if (hunting && dp < CATCH) {
           fish.splice(i, 1); i--; eaten++; pred.mouth = 1;
           const sc = $("#schoolScore"); sc.textContent = "Поймано: " + eaten; sc.classList.remove("is-pop"); void sc.offsetWidth; sc.classList.add("is-pop");
           Sound.play("chomp"); setTimeout(() => fish.push(spawn(true)), 1400);
         }
       }
-      if (Math.random() < 0.08) bubbles.push({ x: Math.random() * W, y: H + 10, r: 2 + Math.random() * 4, v: 0.6 + Math.random() * 0.8 });
-      for (let i = bubbles.length - 1; i >= 0; i--) { bubbles[i].y -= bubbles[i].v; if (bubbles[i].y < -10) bubbles.splice(i, 1); }
+      if (Math.random() < 0.08 * k) bubbles.push({ x: Math.random() * W, y: H + 10, r: 2 + Math.random() * 4, v: 0.6 + Math.random() * 0.8 });
+      for (let i = bubbles.length - 1; i >= 0; i--) { bubbles[i].y -= bubbles[i].v * k; if (bubbles[i].y < -10) bubbles.splice(i, 1); }
+      for (let i = rings.length - 1; i >= 0; i--) if (now - rings[i].t > 900) rings.splice(i, 1);
     }
     function drawFish(f) {
       const a = Math.atan2(f.vy, f.vx), s = 7 * f.s;
@@ -312,27 +351,54 @@
       cx.fillStyle = "#2B2520"; cx.beginPath(); cx.arc(s * 1.1, -s * 0.12, s * 0.16, 0, Math.PI * 2); cx.fill(); cx.restore();
     }
     function drawPred() {
-      const a = Math.atan2(pred.vy, Math.abs(pred.vx) < 0.01 && Math.abs(pred.vy) < 0.01 ? 1 : pred.vx), s = 22;
-      cx.save(); cx.translate(pred.x, pred.y); cx.rotate(a); cx.fillStyle = "#0D2A40";
-      const m = pred.mouth * 0.5;
+      const s = 22, m = pred.mouth * 0.5;
+      cx.save(); cx.translate(pred.x, pred.y); cx.rotate(pred.a); cx.fillStyle = "#0D2A40";
       cx.beginPath(); cx.moveTo(s * 2.2, -s * m); cx.quadraticCurveTo(s * 1.4, -s * 0.95, 0, -s * 0.85); cx.quadraticCurveTo(-s * 1.6, -s * 0.7, -s * 2, 0); cx.quadraticCurveTo(-s * 1.6, s * 0.7, 0, s * 0.85); cx.quadraticCurveTo(s * 1.4, s * 0.95, s * 2.2, s * m); cx.lineTo(s * 1.2, 0); cx.closePath(); cx.fill();
       cx.beginPath(); cx.moveTo(-s * 1.8, 0); cx.lineTo(-s * 3.2, -s * 1.3); cx.lineTo(-s * 2.6, 0); cx.lineTo(-s * 3.2, s * 1.3); cx.closePath(); cx.fill();
       cx.beginPath(); cx.moveTo(-s * 0.2, -s * 0.75); cx.lineTo(-s * 0.9, -s * 1.7); cx.lineTo(-s * 1.1, -s * 0.6); cx.fill();
       cx.fillStyle = "#E9CF9A"; cx.beginPath(); cx.arc(s * 1.3, -s * 0.28, s * 0.17, 0, Math.PI * 2); cx.fill(); cx.restore();
     }
-    function render() {
+    function drawRings(now) {
+      /* подсветка места щелчка: мягкое пятно и расходящееся кольцо */
+      rings.forEach((r) => {
+        const q = Math.min(1, (now - r.t) / 900), fade = 1 - q;
+        const g = cx.createRadialGradient(r.x, r.y, 0, r.x, r.y, 52);
+        g.addColorStop(0, `rgba(233, 207, 154, ${(0.5 * fade).toFixed(3)})`); g.addColorStop(1, "rgba(233, 207, 154, 0)");
+        cx.fillStyle = g; cx.beginPath(); cx.arc(r.x, r.y, 52, 0, Math.PI * 2); cx.fill();
+        cx.strokeStyle = `rgba(251, 248, 241, ${(0.9 * fade).toFixed(3)})`; cx.lineWidth = 1 + 3 * fade;
+        cx.beginPath(); cx.arc(r.x, r.y, 8 + 56 * (1 - Math.pow(1 - q, 3)), 0, Math.PI * 2); cx.stroke();
+      });
+      if (pred.tx != null) {
+        const p = 1 + 0.15 * Math.sin(now / 90);
+        cx.strokeStyle = "rgba(233, 207, 154, 0.95)"; cx.lineWidth = 2.5;
+        cx.beginPath(); cx.arc(pred.tx, pred.ty, 9 * p, 0, Math.PI * 2); cx.stroke();
+        cx.fillStyle = "#E9CF9A"; cx.beginPath(); cx.arc(pred.tx, pred.ty, 3, 0, Math.PI * 2); cx.fill();
+      }
+    }
+    function render(now) {
       cx.clearRect(0, 0, W, H); cx.fillStyle = "rgba(251,248,241,0.16)";
       bubbles.forEach((b) => { cx.beginPath(); cx.arc(b.x, b.y, b.r, 0, Math.PI * 2); cx.fill(); });
+      drawRings(now || performance.now());
       fish.forEach(drawFish); drawPred();
     }
-    function loop(t) { step(t); render(); if (running) raf = requestAnimationFrame(loop); }
-    function pointer(e) { const p = e.touches ? e.touches[0] : e; const l = App.local(p, cv); pred.tx = l.x; pred.ty = l.y; pred.user = true; pred.last = performance.now(); }
-    cv.addEventListener("pointermove", pointer);
-    cv.addEventListener("pointerdown", pointer);
-    cv.addEventListener("touchmove", (e) => { e.preventDefault(); pointer(e); }, { passive: false });
-    cv.addEventListener("pointerleave", () => (pred.user = false));
-    render();
-    App.whenSlide(cv, () => { if (reduced) { for (let i = 0; i < 60; i++) step(i * 16); render(); return; } if (!running) { running = true; raf = requestAnimationFrame(loop); } }, () => { running = false; cancelAnimationFrame(raf); });
+    function loop(now) {
+      if (!running) return;
+      const k = last ? Math.min(3, (now - last) / 16.67) : 1; last = now;
+      step(now, k); render(now);
+      raf = requestAnimationFrame(loop);
+    }
+    cv.addEventListener("pointerdown", (e) => {
+      e.preventDefault();
+      const l = App.local(e, cv), now = performance.now();
+      pred.tx = Math.max(10, Math.min(W - 10, l.x)); pred.ty = Math.max(10, Math.min(H - 10, l.y));
+      rings.push({ x: pred.tx, y: pred.ty, t: now }); if (rings.length > 6) rings.shift();
+      Sound.play("bubble");
+      if (!running) { running = true; last = 0; raf = requestAnimationFrame(loop); }
+    });
+    /* для автоматической проверки */
+    cv.zooState = () => ({ W, H, running, eaten, rings: rings.length, pred: { x: pred.x, y: pred.y, tx: pred.tx, ty: pred.ty }, fish: fish.map((f) => [f.x, f.y]) });
+    document.addEventListener("zoo:fit", () => { if (App.slideId === "school") size(); });
+    App.whenSlide(cv, () => { size(); if (!running) { running = true; last = 0; raf = requestAnimationFrame(loop); } }, () => { running = false; cancelAnimationFrame(raf); });
   })();
 
   /* ================= ОПРЕДЕЛИ ВЗАИМОДЕЙСТВИЕ ================= */
@@ -401,18 +467,20 @@
     btn.addEventListener("click", () => {
       if (wolves) { wolves = false; tRem = st.t; phase = "removed"; btn.textContent = "Вернуть волков"; btn.setAttribute("aria-pressed", "true"); out.textContent = "Волков убрали. Следите за серой линией зайцев."; Sound.play("slide"); }
       else { wolves = true; st.W = 0.08; tRem = st.t; phase = "back"; btn.textContent = "Убрать волков"; btn.setAttribute("aria-pressed", "false"); out.textContent = "Волков вернули в лес. Смотрим, что будет дальше."; Sound.play("correct"); }
-      if (reduced) { for (let i = 0; i < 120; i++) advance(0.12); draw(); }
+
     });
     $("#simReset").addEventListener("click", () => { reset(); Sound.play("click"); });
     reset();
-    App.whenSlide(svg, () => { if (!reduced && !running) { running = true; raf = requestAnimationFrame(loop); } }, () => { running = false; cancelAnimationFrame(raf); });
+    App.whenSlide(svg, () => { if (!running) { running = true; raf = requestAnimationFrame(loop); } }, () => { running = false; cancelAnimationFrame(raf); });
   })();
 
   /* ================= КИНОЗАЛ ================= */
   (function cinema() {
     const v = $("#zooVideo"); if (!v) return;
     const vc = CFG.video || {}, animals = CFG.videoAnimals || [];
-    const empty = $("#playerEmpty"), stopBox = $("#playerStop"), play = $("#vPlay"), track = $("#vTrack"), fill = $("#vFill"), time = $("#vTime");
+    const player = $("#player"), empty = $("#playerEmpty"), stopBox = $("#playerStop"), play = $("#vPlay"), track = $("#vTrack"), fill = $("#vFill"), time = $("#vTime");
+    const frameBtn = $("#vFrame"), pick = $("#vPick");
+    let crop = vc.crop !== false, objUrl = "";
     const stops = (vc.stops || []).slice().sort((a, b) => a.time - b.time), fired = new Set();
     let cur = null;
     const fmt = (s) => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
@@ -423,18 +491,30 @@
       <span class="sign__face sign__back" aria-hidden="true"><span class="sign__name">${esc(a.name)}</span><dl class="sign__rows"><dt>Группа</dt><dd>${esc(a.group || "")}</dd><dt>Где живёт</dt><dd>${esc(a.home || "")}</dd><dt>Строение</dt><dd>${esc(a.look || "")}</dd><dt>Питание</dt><dd>${esc(a.food || "")}</dd><dt>Приспособление</dt><dd>${esc(a.trick || "")}</dd><dt>Роль в природе</dt><dd>${esc(a.role || "")}</dd></dl></span></span></button>`).join("");
     function flipSign(i, on) { const s = grid.children[i]; if (!s) return; const open = on != null ? on : !s.classList.contains("is-open"); s.classList.toggle("is-open", open); s.setAttribute("aria-pressed", open); $(".sign__back", s).setAttribute("aria-hidden", !open); Sound.play("flip"); }
     grid.addEventListener("click", (e) => { const s = e.target.closest(".sign"); if (s) flipSign(+s.dataset.i); });
-    function noVideo() { empty.hidden = false; play.disabled = true; App.mediaNote = `Видео пока не подключено. Положите файл в папку assets/video и впишите его имя в js/config.js (сейчас: ${vc.src || "пусто"}).`; App.renderTeacher(); }
-    if (vc.src) {
-      v.src = vc.src; if (vc.poster) v.poster = vc.poster;
-      v.addEventListener("error", noVideo);
-      v.addEventListener("loadedmetadata", () => {
-        empty.hidden = true; play.disabled = false;
-        if (v.videoHeight > v.videoWidth) $("#player").classList.add("is-portrait");
+    /* «Крупно»: у вертикального ролика сверху и снизу размытый фон, показываем резкую середину кадра */
+    function setCrop(on) { crop = on; player.classList.toggle("is-crop", on); frameBtn.textContent = on ? "Весь кадр" : "Крупно"; frameBtn.setAttribute("aria-pressed", String(!on)); }
+    function noVideo() {
+      player.classList.add("is-empty"); empty.hidden = false; play.disabled = true; frameBtn.hidden = true;
+      App.mediaNote = `Ролика нет рядом с сайтом (${vc.src || "имя не указано"}). Откройте его кнопкой «Открыть ролик» или положите файл рядом с index.html.`; App.renderTeacher();
+    }
+    function load(src) { fired.clear(); cur = null; stopBox.hidden = true; $$(".player__mark", track).forEach((m) => m.parentNode.removeChild(m)); fill.style.width = "0"; v.src = src; }
+    v.addEventListener("error", noVideo);
+    v.addEventListener("loadedmetadata", () => {
+        player.classList.remove("is-empty"); empty.hidden = true; play.disabled = false;
+        const portrait = v.videoHeight > v.videoWidth;
+        player.classList.toggle("is-portrait", portrait); frameBtn.hidden = !portrait; setCrop(portrait && crop);
         stops.forEach((s) => { if (s.time < v.duration) track.insertAdjacentHTML("beforeend", `<span class="player__mark" style="left:${(s.time / v.duration) * 100}%" title="${esc(s.question)}"></span>`); });
         time.textContent = "0:00 / " + fmt(v.duration);
         App.mediaNote = `Видео подключено: ${fmt(v.duration)}, остановок с вопросами: ${stops.filter((s) => s.time < v.duration).length}.`; App.renderTeacher();
-      });
-    } else noVideo();
+    });
+    if (vc.src) { if (vc.poster) v.poster = vc.poster; load(vc.src); } else noVideo();
+    /* ролик с этого устройства: файл никуда не отправляется, браузер читает его на месте */
+    pick.addEventListener("change", () => {
+      const f = pick.files && pick.files[0]; if (!f) return;
+      if (objUrl) URL.revokeObjectURL(objUrl);
+      objUrl = URL.createObjectURL(f); load(objUrl); Sound.play("click");
+    });
+    frameBtn.addEventListener("click", () => { setCrop(!crop); Sound.play("click"); });
     play.addEventListener("click", () => { if (v.paused) { stopBox.hidden = true; v.play(); } else v.pause(); });
     v.addEventListener("play", () => (play.textContent = "Пауза"));
     v.addEventListener("pause", () => (play.textContent = "Смотреть"));
@@ -449,7 +529,11 @@
     track.addEventListener("click", (e) => { if (!v.duration) return; const r = track.getBoundingClientRect(); v.currentTime = ((e.clientX - r.left) / r.width) * v.duration; });
     $("#stopGo").addEventListener("click", () => { stopBox.hidden = true; v.play(); });
     $("#stopCard").addEventListener("click", () => { if (!cur) return; const a = animals[cur.animal]; if (a) { $("#stopTag").textContent = "Табличка у вольера"; $("#stopQ").textContent = `${a.name}. ${a.group}. ${a.trick}.`; $("#stopCard").hidden = true; flipSign(cur.animal, true); } });
-    $("#vFull").addEventListener("click", () => { const p = $("#player"); if (!document.fullscreenElement) p.requestFullscreen && p.requestFullscreen().catch(() => {}); else document.exitFullscreen(); });
+    $("#vFull").addEventListener("click", () => {
+      if (document.fullscreenElement) { document.exitFullscreen(); return; }
+      if (player.requestFullscreen) player.requestFullscreen().catch(() => {});
+      else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen();
+    });
     App.whenSlide(v, null, () => { if (!v.paused) v.pause(); });
     const au = CFG.audio || {};
     if (au.src) {

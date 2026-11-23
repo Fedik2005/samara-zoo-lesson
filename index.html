@@ -2,13 +2,13 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <title>Экскурсия в Самарский зоопарк</title>
 <meta name="description" content="Урок биологии для 8 класса в форме экскурсии по Самарскому зоопарку. Тема: Зоология. Экология. Многообразие животных и их приспособленность к среде обитания.">
 <meta name="theme-color" content="#E9D6AE">
 <link rel="preload" href="assets/fonts/unbounded-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=9">
+<link rel="stylesheet" href="css/style.css?v=10">
 </head>
 <body>
 <div class="viewport" id="viewport">
@@ -25,6 +25,7 @@
     <button class="bar__arrow" id="prev" type="button" aria-label="Предыдущий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg></button>
     <button class="bar__arrow" id="next" type="button" aria-label="Следующий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 L16 12 L9 19"/></svg></button>
   </div>
+  <p class="bar__count" id="barCount" aria-hidden="true">1 / 25</p>
   <div class="bar__progress" aria-hidden="true"><i id="progress"></i></div>
 </header>
 
@@ -83,9 +84,11 @@
       <button class="btn" id="randomBeast" type="button">Случайное животное</button>
       <p class="pt__count" id="beastCount">Открыто 0 из 20</p>
     </div>
+  </div>
+  <div class="pt__main">
+    <div class="wall" id="wall"></div>
     <p class="pt__moral" id="wallMoral" hidden>Особенности животных связаны с их образом жизни.</p>
   </div>
-  <div class="wall" id="wall"></div>
 </section>
 
 <!-- 4. ВОПРОСЫ СМОТРИТЕЛЯ -->
@@ -135,7 +138,7 @@
           <li><span>Царство</span> Животные</li><li><span>Тип</span> Хордовые</li><li><span>Класс</span> Млекопитающие</li>
           <li><span>Отряд</span> Хищные</li><li><span>Семейство</span> Кошачьи</li><li><span>Род</span> Пантеры</li><li><span>Вид</span> Тигр</li>
         </ul>
-        <img src="assets/img/tiger.jpg" alt="Амурский тигр пьёт воду из пруда" style="object-position:62% 40%">
+        <img src="assets/img/tiger.jpg" alt="Амурский тигр пьёт воду из пруда">
       </div>
     </article>
     <article class="acc__panel" style="--tone:#7A4E2C;--tink:#FBF8F1">
@@ -143,7 +146,7 @@
       <div class="acc__body">
         <p class="acc__what">Внешнее строение</p>
         <p>Рисунок полос у каждого тигра свой, как отпечаток пальца. У амурского тигра самый длинный и густой мех среди тигров: зимой в Приморье бывает ниже −30 °C.</p>
-        <img src="assets/img/tiger-walk.jpg" alt="Морда амурского тигра с полосами" style="object-position:50% 35%">
+        <img src="assets/img/tiger-walk.jpg" alt="Морда амурского тигра с полосами">
       </div>
     </article>
     <article class="acc__panel" style="--tone:#9A6A3E;--tink:#FBF8F1">
@@ -151,7 +154,7 @@
       <div class="acc__body">
         <p class="acc__what">Внутреннее строение</p>
         <p>Скелет показывает, как устроено тело хищника: мощные челюсти с длинными клыками, гибкий позвоночник и сильные кости лап. Когти втягиваются и не тупятся при ходьбе.</p>
-        <img src="assets/img/tiger-skeleton.jpg" alt="Скелет тигра в музейной витрине" style="object-position:50% 40%">
+        <img src="assets/img/tiger-skeleton.jpg" alt="Скелет тигра в музейной витрине">
       </div>
     </article>
     <article class="acc__panel" style="--tone:#B98A57;--tink:#2B2520">
@@ -159,7 +162,7 @@
       <div class="acc__body">
         <p class="acc__what">Функции организма</p>
         <p>В темноте тигр видит намного лучше нас. За сетчаткой глаза лежит отражающий слой, поэтому глаза кошек светятся ночью в лучах фар.</p>
-        <img src="assets/img/tiger-eye.jpg" alt="Глаз тигра крупным планом" style="object-position:55% 45%">
+        <img src="assets/img/tiger-eye.jpg" alt="Глаз тигра крупным планом">
       </div>
     </article>
     <article class="acc__panel" style="--tone:#D2B084;--tink:#2B2520">
@@ -167,7 +170,7 @@
       <div class="acc__body">
         <p class="acc__what">Поведение</p>
         <p>Тигр охотится в одиночку из засады и метит свой участок. Тигрица около двух лет растит тигрят и учит их охотиться.</p>
-        <img src="assets/img/tiger-mother.jpg" alt="Тигрица с тигрёнком на снегу" style="object-position:45% 50%">
+        <img src="assets/img/tiger-mother.jpg" alt="Тигрица с тигрёнком на снегу">
       </div>
     </article>
     <article class="acc__panel" style="--tone:#E8D3AE;--tink:#2B2520">
@@ -175,7 +178,7 @@
       <div class="acc__body">
         <p class="acc__what">Связи со средой</p>
         <p>Амурский тигр живёт в лесах Приморья и Хабаровского края, охотится на кабанов и оленей и держит их численность в равновесии. По учёту 2022 года в России около 750 амурских тигров.</p>
-        <img src="assets/img/tiger-snow.jpg" alt="Молодой амурский тигр бежит по снегу" style="object-position:50% 45%">
+        <img src="assets/img/tiger-snow.jpg" alt="Молодой амурский тигр бежит по снегу">
       </div>
     </article>
   </div>
@@ -191,9 +194,11 @@
     </div>
     <p class="dv__hint">Если уложить все описанные виды в 1000 клеток. Нажмите на группу:</p>
     <div class="legend" id="legend"></div>
+  </div>
+  <div class="dv__viz">
+    <svg class="cells" id="cells" viewBox="0 0 400 250" role="img" aria-label="Тысяча клеток по группам животных: две трети занимают насекомые, млекопитающие занимают четыре клетки"></svg>
     <p class="dv__out" id="cellsOut" aria-live="polite">Позвоночных меньше 5%. Тигр и мы с вами в четырёх клетках из тысячи.</p>
   </div>
-  <svg class="cells" id="cells" viewBox="0 0 400 250" role="img" aria-label="Тысяча клеток по группам животных: две трети занимают насекомые, млекопитающие занимают четыре клетки"></svg>
 </section>
 
 <!-- 9. СТРОЕНИЕ И УСЛОВИЯ ЖИЗНИ -->
@@ -332,7 +337,7 @@
   <canvas id="schoolCanvas" class="school__canvas" aria-label="Косяк рыб убегает от хищника"></canvas>
   <div class="school__ui">
     <h2 class="title">Стань хищником</h2>
-    <p>Ведите мышкой или пальцем и поймайте рыбу. Косяк для того и нужен: хищнику трудно выбрать одну цель.</p>
+    <p>Нажимайте мышкой или пальцем: хищник поплывёт туда, куда вы нажали. Косяк для того и нужен: хищнику трудно выбрать одну цель.</p>
     <p class="school__score" id="schoolScore" aria-live="polite">Поймано: 0</p>
   </div>
 </section>
@@ -381,7 +386,9 @@
     <video id="zooVideo" playsinline preload="metadata"></video>
     <div class="player__empty" id="playerEmpty" hidden>
       <img src="assets/art/sticker-fish.svg" alt="">
-      <p>Здесь будет фильм из Самарского зоопарка</p>
+      <p class="player__empty-t">Фильм из Самарского зоопарка</p>
+      <p class="player__empty-n">Ролик не выкладывается в интернет. Если файл есть на этом компьютере или телефоне, откройте его здесь.</p>
+      <label class="btn btn--light player__pick">Открыть ролик<input type="file" id="vPick" accept="video/*,.mov,.mp4" hidden></label>
     </div>
     <div class="player__stop" id="playerStop" hidden>
       <p class="player__stop-tag" id="stopTag">Вопрос классу</p>
@@ -392,6 +399,7 @@
       <button class="player__play" id="vPlay" type="button">Смотреть</button>
       <div class="player__track" id="vTrack"><div class="player__fill" id="vFill"></div></div>
       <p class="player__time" id="vTime">0:00</p>
+      <button class="player__full" id="vFrame" type="button" aria-pressed="false" hidden>Весь кадр</button>
       <button class="player__full" id="vFull" type="button">Во весь экран</button>
     </div>
   </div>
@@ -473,6 +481,7 @@
 <div class="map" id="map" role="dialog" aria-modal="true" aria-labelledby="mapTitle" hidden>
   <div class="map__head"><h2 class="title" id="mapTitle">Карта Самарского зоопарка</h2><p class="map__count" id="mapCount">Штампы: 0 из 15</p><button class="btn btn--light" id="mapClose" type="button">Закрыть</button></div>
   <svg class="map__svg" id="mapSvg" viewBox="0 0 1000 700" role="group" aria-label="Нажмите на вольер, чтобы перейти к нему"></svg>
+  <ul class="map__list" id="mapList" aria-label="Вольеры зоопарка"></ul>
 </div>
 
 <!-- ПАНЕЛЬ УЧИТЕЛЯ -->
@@ -492,14 +501,13 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <canvas class="confetti" id="confetti" aria-hidden="true" hidden></canvas>
 </div>
-<div class="rotate" id="rotateHint" hidden><p>Поверните телефон горизонтально</p><button type="button" id="rotateOk">Понятно</button></div>
 </div>
 
-<script src="js/config.js?v=9"></script>
-<script src="js/data.js?v=9"></script>
-<script src="js/sound.js?v=9"></script>
-<script src="js/app.js?v=9"></script>
-<script src="js/stations.js?v=9"></script>
-<script src="js/quiz.js?v=9"></script>
+<script src="js/config.js?v=10"></script>
+<script src="js/data.js?v=10"></script>
+<script src="js/sound.js?v=10"></script>
+<script src="js/app.js?v=10"></script>
+<script src="js/stations.js?v=10"></script>
+<script src="js/quiz.js?v=10"></script>
 </body>
 </html>

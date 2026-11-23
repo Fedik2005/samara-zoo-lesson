@@ -14,16 +14,18 @@
   const meta = Object.fromEntries(ZOO.slides.map((s) => [s.id, s]));
   const zones = ZOO.zones;
 
-  /* ---------- Масштаб сцены под экран ---------- */
+  /* ---------- Масштаб сцены под экран ----------
+     Компьютер и проектор: сцена 1280×720 масштабируется целиком.
+     Телефон вертикально: своя раскладка, слайд прокручивается сам (тот же запрос, что в style.css). */
+  const PHONE = matchMedia("(max-width: 900px) and (orientation: portrait)");
   function fit() {
-    const s = Math.min(innerWidth / 1280, innerHeight / 720);
+    App.phone = PHONE.matches;
+    const s = App.phone ? 1 : Math.min(innerWidth / 1280, innerHeight / 720);
     App.scale = s;
     stage.style.setProperty("--scale", s.toFixed(4));
-    const portrait = innerHeight > innerWidth && innerWidth < 900;
-    $("#rotateHint").hidden = !portrait || sessionStorage.getItem("zoo8:rot") === "1";
+    document.dispatchEvent(new CustomEvent("zoo:fit"));
   }
   addEventListener("resize", fit); fit();
-  $("#rotateOk").addEventListener("click", () => { sessionStorage.setItem("zoo8:rot", "1"); $("#rotateHint").hidden = true; });
   /* перевод координат экрана в координаты элемента на сцене */
   App.local = (e, el) => { const r = el.getBoundingClientRect(); return { x: (e.clientX - r.left) / App.scale, y: (e.clientY - r.top) / App.scale, w: r.width / App.scale, h: r.height / App.scale }; };
 
@@ -33,14 +35,14 @@
   App.confetti = (amount) => {
     if (reduced) return;
     const cv = $("#confetti"); cv.hidden = false;
-    const cx = cv.getContext("2d"); cv.width = 1280; cv.height = 720;
+    const cx = cv.getContext("2d"), W = stage.clientWidth, H = stage.clientHeight; cv.width = W; cv.height = H;
     const colors = ["#E9CF9A", "#EBD3C1", "#D6E7EA", "#C7825F", "#4C7A3E", "#FBF8F1", "#A8485A"];
-    const parts = Array.from({ length: amount || 140 }, () => ({ x: 640 + (Math.random() - 0.5) * 600, y: 280, vx: (Math.random() - 0.5) * 13, vy: -Math.random() * 13 - 4, w: 8 + Math.random() * 9, h: 5 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, c: colors[(Math.random() * colors.length) | 0] }));
+    const parts = Array.from({ length: amount || 140 }, () => ({ x: W / 2 + (Math.random() - 0.5) * Math.min(600, W * 0.8), y: H * 0.39, vx: (Math.random() - 0.5) * 13, vy: -Math.random() * 13 - 4, w: 8 + Math.random() * 9, h: 5 + Math.random() * 6, r: Math.random() * 6, vr: (Math.random() - 0.5) * 0.3, c: colors[(Math.random() * colors.length) | 0] }));
     let f = 0;
     (function loop() {
-      cx.clearRect(0, 0, 1280, 720);
+      cx.clearRect(0, 0, W, H);
       parts.forEach((p) => { p.vy += 0.34; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.r += p.vr; cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h * Math.abs(Math.cos(p.r * 2))); cx.restore(); });
-      if (++f < 200) requestAnimationFrame(loop); else { cx.clearRect(0, 0, 1280, 720); cv.hidden = true; }
+      if (++f < 200) requestAnimationFrame(loop); else { cx.clearRect(0, 0, W, H); cv.hidden = true; }
     })();
   };
 
@@ -86,12 +88,12 @@
     const prev = slides[App.index], next = slides[i];
     if (prev && prev !== next && App.slideId) {
       prev.classList.remove("is-active", "is-enter-next", "is-enter-prev");
-      if (!reduced) { prev.classList.add("is-leave"); setTimeout(() => prev.classList.remove("is-leave"), 560); }
+      prev.classList.add("is-leave"); setTimeout(() => prev.classList.remove("is-leave"), 560);
     }
     next.classList.remove("is-leave", "is-enter-next", "is-enter-prev");
     void next.offsetWidth;
     next.classList.add("is-active");
-    if (dir && !reduced) next.classList.add(dir > 0 ? "is-enter-next" : "is-enter-prev");
+    if (dir) next.classList.add(dir > 0 ? "is-enter-next" : "is-enter-prev");
     App.index = i; App.slideId = next.id;
     const m = meta[next.id] || {};
     const cs = getComputedStyle(next);
@@ -102,6 +104,8 @@
     const zi = zoneIndex(m.zone);
     $$(".bar__dot").forEach((d) => d.classList.toggle("is-here", +d.dataset.zone === zi));
     $("#progress").style.width = ((i + 1) / slides.length * 100).toFixed(1) + "%";
+    $("#barCount").textContent = `${i + 1} / ${slides.length}`;
+    if (App.phone) next.scrollTop = 0;
     $("#prev").disabled = i === 0; $("#next").disabled = i === slides.length - 1;
     history.replaceState(null, "", "#" + next.id);
     Sound.ambient(ambientFor[next.id] || "birds");
@@ -127,6 +131,7 @@
     const k = e.key;
     if (!$("#map").hidden) { if (k === "Escape" || /^[mMьЬ]$/.test(k)) { e.preventDefault(); closeMap(); } return; }
     if (tag === "input" && t.type === "range" && k.startsWith("Arrow")) return;
+    if (App.phone && ["ArrowDown", "ArrowUp", "PageDown", "PageUp", " "].includes(k)) return;
     if (["ArrowRight", "ArrowDown", "PageDown"].includes(k) || (k === " " && tag !== "button" && tag !== "a")) { e.preventDefault(); App.next(); }
     else if (["ArrowLeft", "ArrowUp", "PageUp"].includes(k)) { e.preventDefault(); App.prev(); }
     else if (k === "Home") { e.preventDefault(); App.go(0); }
@@ -142,7 +147,7 @@
   /* Колёсико мыши */
   let wheelLock = 0;
   addEventListener("wheel", (e) => {
-    if (e.target.closest(".teacher, .map")) return;
+    if (App.phone || e.target.closest(".teacher, .map")) return;
     if (Math.abs(e.deltaY) < 30 && Math.abs(e.deltaX) < 30) return;
     const now = Date.now(); if (now < wheelLock) return; wheelLock = now + 750;
     if ((e.deltaY || e.deltaX) > 0) App.next(); else App.prev();
@@ -214,6 +219,7 @@
       </g>`;
     }).join("");
     $("#mapSvg").innerHTML = trees + water + path + zs + `<text x="40" y="650" fill="#FBF8F1" font-family="Unbounded, sans-serif" font-weight="700" font-size="20">Вход</text>`;
+    $("#mapList").innerHTML = zones.map((z, i) => `<li><button class="map__item${i === cur ? " is-here" : ""}" type="button" data-zone="${i}" style="--zc:${z.field};--zi:${z.ink || "#2B2520"}"><span>${z.name}</span><b>${seen.has(i) ? "штамп ✓" : i === cur ? "вы здесь" : ""}</b></button></li>`).join("");
   }
   let lastFocus;
   function openMap() { lastFocus = document.activeElement; drawMap(); $("#map").hidden = false; Sound.play("flip"); $("#mapClose").focus(); }
@@ -223,6 +229,7 @@
   $("#btnMap2").addEventListener("click", openMap);
   $("#mapClose").addEventListener("click", closeMap);
   $("#mapSvg").addEventListener("click", (e) => { const g = e.target.closest("[data-zone]"); if (g) { closeMap(); goZone(+g.dataset.zone); } });
+  $("#mapList").addEventListener("click", (e) => { const g = e.target.closest("[data-zone]"); if (g) { closeMap(); goZone(+g.dataset.zone); } });
   $("#mapSvg").addEventListener("keydown", (e) => { if (e.key !== "Enter" && e.key !== " ") return; const g = e.target.closest("[data-zone]"); if (g) { e.preventDefault(); closeMap(); goZone(+g.dataset.zone); } });
 
   /* ---------- Панель учителя ---------- */

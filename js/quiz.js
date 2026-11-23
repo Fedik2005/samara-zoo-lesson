@@ -11,7 +11,7 @@
     { name: "Волки", color: "#D5DCC6" }
   ];
   const S = {
-    mode: "team", count: 2, names: store.get("quizNames", TEAM_DEF.map((t) => t.name)), timer: false,
+    mode: App.phone ? "solo" : "team", count: 2, names: store.get("quizNames", TEAM_DEF.map((t) => t.name)), timer: false,
     teams: [], qi: 0, revealed: false, awards: new Set(), solo: 0, left: 30, tick: null, tie: null
   };
 
