@@ -24,7 +24,9 @@
   th, td { border: 1.5px solid #2B2520; padding: 3mm; vertical-align: top; text-align: left; }
   th { background: #E9D6AE; font-size: 10.5pt; }
   td { height: 30mm; }
-  td.name { font-weight: 700; width: 30mm; }
+  td.name { font-weight: 700; }
+  #obsRows th:first-child, table th:first-child { width: 40mm; }
+  th, td { overflow-wrap: anywhere; hyphens: auto; }
   .q { break-inside: avoid; border: 1.5px solid #2B2520; padding: 4mm; margin-bottom: 4mm; }
   .q h3 { font-size: 12pt; margin: 0 0 2mm; }
   .q ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 6mm; }
@@ -39,7 +41,14 @@
   .team table td { height: 12mm; }
   .hw { border: 3px solid #2B2520; padding: 6mm; margin-top: 6mm; break-inside: avoid; }
   @media print { body { background: #fff; } .bar { display: none; } .sheet { margin: 0; width: auto; min-height: 0; padding: 0; } }
+  @media screen and (max-width: 840px) { .bar { padding: 10px 12px; } }
+  @media print { .sheet { zoom: 1 !important; } }
 </style>
+<script>
+  /* на узком экране лист A4 уменьшается целиком, при печати остаётся в настоящем размере */
+  function fitSheets() { const w = Math.min(innerWidth, screen.width || innerWidth), s = Math.min(1, (w - 12) / 794); document.querySelectorAll(".sheet").forEach((e) => (e.style.zoom = s < 1 ? s.toFixed(3) : "")); }
+  addEventListener("resize", fitSheets); addEventListener("DOMContentLoaded", fitSheets);
+</script>
 </head>
 <body>
 <div class="bar"><b>Материалы для печати</b><span>Пять листов A4. Перед печатью проверьте карточки животных в js/config.js.</span><button type="button" onclick="window.print()">Печать</button></div>

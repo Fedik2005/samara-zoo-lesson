@@ -241,6 +241,7 @@
     $("#tStage").textContent = `Этап ${m.stage} из 8. ${ZOO.stages[m.stage]}`;
     $("#tStop").textContent = (slides[App.index].getAttribute("aria-label") || "") + ` (слайд ${App.index + 1} из ${slides.length})`;
     $("#tWindow").textContent = m.window;
+    $("#tSpeech").textContent = (ZOO.speech || {})[App.slideId] || "";
     $("#tDo").textContent = n.do || ""; $("#tSay").textContent = n.say || ""; $("#tTip").textContent = n.tip || "";
     $("#tMedia").textContent = App.slideId === "cinema" ? (App.mediaNote || "") : "";
     tick();
