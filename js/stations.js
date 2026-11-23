@@ -389,8 +389,11 @@
     }
     cv.addEventListener("pointerdown", (e) => {
       e.preventDefault();
-      const l = App.local(e, cv), now = performance.now();
-      pred.tx = Math.max(10, Math.min(W - 10, l.x)); pred.ty = Math.max(10, Math.min(H - 10, l.y));
+      /* точка клика в координатах холста по его настоящему размеру на экране */
+      if (Math.abs(cv.clientWidth - W) > 2 || Math.abs(cv.clientHeight - H) > 2) size();
+      const r = cv.getBoundingClientRect(), now = performance.now();
+      const lx = (e.clientX - r.left) * (W / r.width), ly = (e.clientY - r.top) * (H / r.height);
+      pred.tx = Math.max(10, Math.min(W - 10, lx)); pred.ty = Math.max(10, Math.min(H - 10, ly));
       rings.push({ x: pred.tx, y: pred.ty, t: now }); if (rings.length > 6) rings.shift();
       Sound.play("bubble");
       if (!running) { running = true; last = 0; raf = requestAnimationFrame(loop); }

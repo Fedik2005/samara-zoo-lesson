@@ -660,6 +660,10 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
   #next { right: 16px; width: 112px; }
   .bar__count { display: block; position: fixed; left: 50%; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); line-height: 52px; font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; }
 
+  /* ничего не сжимается: длинный слайд прокручивается, а не сплющивается; всё чуть мельче */
+  .slide > *, .pt__side > *, .pt__main > *, .dv__side > *, .pg__side > *, .pg__main > *, .gf__text > *, .cm__side > *, .fc__side > *, .cn__side > *, .zl__text > *, .zoos__text > * { flex-shrink: 0; }
+  .slide > *:not(canvas):not(.sticker) { zoom: 0.86; }
+  .slide .sticker { width: 58px; height: 58px; }
   /* слайд: колонка с прокруткой */
   .slide { top: calc(56px + env(safe-area-inset-top, 0px)); bottom: calc(76px + env(safe-area-inset-bottom, 0px)); padding: 18px 18px 32px; display: flex; flex-direction: column; gap: 14px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
   @keyframes inNext { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
