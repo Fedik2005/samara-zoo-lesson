@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Источники и авторы фото</title>
+<style>
+  @font-face { font-family: "Unbounded"; font-weight: 200 900; src: url("assets/fonts/unbounded-cyrillic-wght-normal.woff2") format("woff2"); unicode-range: U+0400-045F; }
+  @font-face { font-family: "Unbounded"; font-weight: 200 900; src: url("assets/fonts/unbounded-latin-wght-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: "Onest"; font-weight: 100 900; src: url("assets/fonts/onest-cyrillic-wght-normal.woff2") format("woff2"); unicode-range: U+0400-045F; }
+  @font-face { font-family: "Onest"; font-weight: 100 900; src: url("assets/fonts/onest-latin-wght-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+  :root { --ink: #2B2520; --paper: #FBF8F1; --sand: #E9D6AE; --leaf: #4C7A3E; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--sand); color: var(--ink); font-family: "Onest", "Segoe UI", sans-serif; font-size: 17px; line-height: 1.5; }
+  main { max-width: 980px; margin: 0 auto; padding: 48px 20px 64px; display: grid; gap: 28px; }
+  h1 { font-family: "Unbounded", sans-serif; font-size: clamp(28px, 5vw, 44px); line-height: 1.05; letter-spacing: -0.03em; margin: 0; }
+  h2 { font-family: "Unbounded", sans-serif; font-size: 22px; margin: 0 0 12px; }
+  section { background: var(--paper); border-radius: 22px; padding: 24px 26px; }
+  ol, ul { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+  a { color: var(--leaf); text-underline-offset: 3px; }
+  .back { justify-self: start; display: inline-block; padding: 10px 20px; border-radius: 999px; background: var(--ink); color: var(--paper); text-decoration: none; font-weight: 700; }
+  .muted { color: #5A4E44; font-size: 15px; }
+</style>
+</head>
+<body>
+<main>
+  <a class="back" href="index.html">Вернуться к экскурсии</a>
+  <h1>Источники и авторы фотографий</h1>
+  <section>
+    <h2>Список источников</h2>
+    <ol id="sources"></ol>
+  </section>
+  <section>
+    <h2>Фотографии</h2>
+    <p class="muted">Все фотографии взяты с Wikimedia Commons под свободными лицензиями. Фото камбалы использовано фрагментом.</p>
+    <ul id="photos"></ul>
+  </section>
+  <section>
+    <h2>Иллюстрации и шрифты</h2>
+    <ul>
+      <li>Смотритель зоопарка, стикеры с животными и схемы нарисованы специально для этого урока.</li>
+      <li>Шрифты Unbounded и Onest, лицензия SIL Open Font License 1.1.</li>
+    </ul>
+  </section>
+</main>
+<script src="js/data.js"></script>
+<script src="js/credits.js"></script>
+<script>
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  document.getElementById("sources").innerHTML = ZOO.sources.map((s) => `<li>${esc(s)}</li>`).join("");
+  document.getElementById("photos").innerHTML = ZOO_CREDITS.map((c) => `<li><b>${esc(c.what)}</b>: «${esc(c.title)}», автор: ${esc(c.creator)}, лицензия ${esc(c.license)}. <a href="${esc(c.page)}" target="_blank" rel="noopener">Страница файла</a></li>`).join("");
+</script>
+</body>
+</html>

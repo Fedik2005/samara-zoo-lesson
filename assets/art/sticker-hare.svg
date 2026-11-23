@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><defs><filter id="o" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="8" result="d"/><feFlood flood-color="#FFFFFF"/><feComposite in2="d" operator="in" result="w"/><feMerge><feMergeNode in="w"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#o)">
+  <ellipse cx="74" cy="52" rx="16" ry="46" transform="rotate(-10 74 52)" fill="#EDE8E0" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><ellipse cx="126" cy="52" rx="16" ry="46" transform="rotate(10 126 52)" fill="#EDE8E0" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <ellipse cx="74" cy="56" rx="7" ry="32" transform="rotate(-10 74 56)" fill="#E8B6AE"/><ellipse cx="126" cy="56" rx="7" ry="32" transform="rotate(10 126 56)" fill="#E8B6AE"/>
+  <ellipse cx="100" cy="128" rx="60" ry="54" fill="#EDE8E0" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <ellipse cx="78" cy="120" rx="5.95" ry="7" fill="#2B2520"/><circle cx="80.5" cy="117" r="2.24" fill="#FBF8F1"/><ellipse cx="122" cy="120" rx="5.95" ry="7" fill="#2B2520"/><circle cx="124.5" cy="117" r="2.24" fill="#FBF8F1"/>
+  <path d="M94 140 Q100 136 106 140 Q102 146 100 147 Q98 146 94 140 Z" fill="#D98B86"/>
+  <path d="M100 147 V154 M100 154 Q94 160 88 156 M100 154 Q106 160 112 156" fill="none" stroke="#2B2520" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M60 144 H34 M60 150 H36 M140 144 H166 M140 150 H164" stroke="#B8AFA4" stroke-width="2.5" stroke-linecap="round"/></g></svg>

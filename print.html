@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Материалы для печати</title>
+<style>
+  @font-face { font-family: "Unbounded"; font-weight: 200 900; src: url("assets/fonts/unbounded-cyrillic-wght-normal.woff2") format("woff2"); unicode-range: U+0400-045F; }
+  @font-face { font-family: "Unbounded"; font-weight: 200 900; src: url("assets/fonts/unbounded-latin-wght-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+  @font-face { font-family: "Onest"; font-weight: 100 900; src: url("assets/fonts/onest-cyrillic-wght-normal.woff2") format("woff2"); unicode-range: U+0400-045F; }
+  @font-face { font-family: "Onest"; font-weight: 100 900; src: url("assets/fonts/onest-latin-wght-normal.woff2") format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; }
+  @page { size: A4; margin: 14mm; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: "Onest", "Segoe UI", sans-serif; font-size: 12pt; line-height: 1.4; color: #0A0A0A; background: #E9E9E9; }
+  .bar { position: sticky; top: 0; background: #FFD249; padding: 14px 20px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; z-index: 2; }
+  .bar b { font-family: "Unbounded", sans-serif; font-size: 18px; }
+  .bar button { font: inherit; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 0; background: #0A0A0A; color: #fff; cursor: pointer; }
+  .sheet { background: #fff; width: 210mm; min-height: 297mm; margin: 16px auto; padding: 14mm; page-break-after: always; break-after: page; }
+  h1 { font-family: "Unbounded", sans-serif; font-weight: 700; font-size: 20pt; letter-spacing: -0.02em; line-height: 1.1; margin: 0 0 4mm; }
+  h2 { font-family: "Unbounded", sans-serif; font-weight: 700; font-size: 13pt; margin: 6mm 0 2mm; }
+  p { margin: 0 0 3mm; }
+  .muted { color: #444; font-size: 10.5pt; }
+  table { width: 100%; border-collapse: collapse; margin-top: 4mm; table-layout: fixed; }
+  th, td { border: 1.5px solid #0A0A0A; padding: 3mm; vertical-align: top; text-align: left; }
+  th { background: #FFD249; font-size: 10.5pt; }
+  td { height: 30mm; }
+  td.name { font-weight: 700; width: 30mm; }
+  .q { break-inside: avoid; border: 1.5px solid #0A0A0A; padding: 4mm; margin-bottom: 4mm; }
+  .q h3 { font-size: 12pt; margin: 0 0 2mm; }
+  .q ul { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr 1fr; gap: 2mm 6mm; }
+  .q li::before { content: ""; display: inline-block; width: 4mm; height: 4mm; border: 1.5px solid #0A0A0A; margin-right: 2.5mm; vertical-align: -0.6mm; }
+  .stickers { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .stk { border: 2px dashed #0A0A0A; padding: 5mm; min-height: 80mm; display: grid; grid-template-rows: auto 1fr auto; gap: 3mm; }
+  .stk b { font-family: "Unbounded", sans-serif; font-size: 11pt; }
+  .stk .lines { background: repeating-linear-gradient(to bottom, transparent 0 9mm, #BDBDBD 9mm calc(9mm + 1px)); } /* taste-skill-ignore: линейки для письма */
+  .ans { break-inside: avoid; margin-bottom: 4mm; }
+  .ans b { display: block; }
+  .team { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+  .team table td { height: 12mm; }
+  .hw { border: 3px solid #0A0A0A; padding: 6mm; margin-top: 6mm; break-inside: avoid; }
+  @media print { body { background: #fff; } .bar { display: none; } .sheet { margin: 0; width: auto; min-height: 0; padding: 0; } }
+</style>
+</head>
+<body>
+<div class="bar"><b>Материалы для печати</b><span>Пять листов A4. Перед печатью проверьте карточки животных в js/config.js.</span><button type="button" onclick="window.print()">Печать</button></div>
+
+<section class="sheet">
+  <h1>Карточка наблюдателя</h1>
+  <p>Фильм из Самарского зоопарка. Для каждого животного запишите, что вы увидели в кадре и что знаете о нём.</p>
+  <p class="muted">Имя ___________________________ &nbsp;&nbsp; Команда ___________________</p>
+  <table>
+    <thead><tr><th style="width:30mm">Животное</th><th>Группа (класс)</th><th>Строение или поведение</th><th>Чем питается</th><th>Приспособление</th></tr></thead>
+    <tbody id="obsRows"></tbody>
+  </table>
+</section>
+
+<section class="sheet">
+  <h1>Викторина</h1>
+  <p class="muted">Команда ___________________________ &nbsp;&nbsp; Отметьте один ответ в каждом вопросе.</p>
+  <div id="quizCards"></div>
+</section>
+
+<section class="sheet">
+  <h1>Три открытия</h1>
+  <p class="muted">Разрежьте по пунктиру. Каждый ученик заполняет одну карточку.</p>
+  <div class="stickers" id="stickers"></div>
+</section>
+
+<section class="sheet">
+  <h1>Ответы для учителя</h1>
+  <div id="answers"></div>
+  <h2>Дополнительный вопрос при ничьей</h2>
+  <p id="tie"></p>
+  <h2>Вопросы для обсуждения</h2>
+  <ul>
+    <li>Можно ли считать зоопарк полноценной заменой естественной среде обитания? Почему?</li>
+    <li>Может ли исчезновение одного вида изменить состояние всей экосистемы?</li>
+    <li>Почему животные одного класса могут иметь разные приспособления?</li>
+    <li>Всегда ли приспособление, полезное в одной среде, будет полезным в другой?</li>
+    <li>Когда вмешательство человека в жизнь животных может быть оправдано?</li>
+  </ul>
+</section>
+
+<section class="sheet">
+  <h1>Табло команд</h1>
+  <div class="team" id="board"></div>
+  <div class="hw">
+    <h2 style="margin-top:0">Задание на дом</h2>
+    <p>Выберите любое животное и найдите три факта: как оно приспособлено к своей среде обитания и какую роль играет в природе.</p>
+    <p class="muted">Животное: ______________________________________________</p>
+  </div>
+</section>
+
+<script src="js/config.js"></script>
+<script src="js/data.js"></script>
+<script>
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  const animals = (window.ZOO_CONFIG && ZOO_CONFIG.videoAnimals) || [];
+  document.getElementById("obsRows").innerHTML = animals.map((a) => `<tr><td class="name">${esc(a.name)}</td><td></td><td></td><td></td><td></td></tr>`).join("") + `<tr><td class="name"></td><td></td><td></td><td></td><td></td></tr>`;
+  document.getElementById("quizCards").innerHTML = ZOO.quiz.map((q, i) => `<div class="q"><h3>${i + 1}. ${esc(q.q)}</h3><ul>${q.options.map((o) => `<li>${esc(o)}</li>`).join("")}</ul></div>`).join("");
+  const kinds = ["Новый факт, который я узнал", "Самое интересное животное и почему", "Вопрос, который у меня остался"];
+  let st = "";
+  for (let i = 0; i < 4; i++) st += `<div class="stk"><b>Три открытия</b><div class="lines"></div><span class="muted">${kinds.join(" · ")}</span></div>`;
+  document.getElementById("stickers").innerHTML = st;
+  document.getElementById("answers").innerHTML = ZOO.quiz.map((q, i) => `<div class="ans"><b>${i + 1}. ${esc(q.q)}</b>Ответ: ${esc(q.options[q.correct])}. ${esc(q.explain)}</div>`).join("");
+  document.getElementById("tie").textContent = ZOO.tiebreak.q + " Пример ответа: " + ZOO.tiebreak.sample;
+  const teams = ["Тигры", "Пингвины", "Жирафы", "Волки"];
+  document.getElementById("board").innerHTML = teams.map((t) => `<table><thead><tr><th colspan="2">${t}</th></tr></thead><tbody>${ZOO.quiz.map((_, i) => `<tr><td style="width:18mm">${i + 1}</td><td></td></tr>`).join("")}<tr><td><b>Итого</b></td><td></td></tr></tbody></table>`).join("");
+</script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><defs><filter id="o" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="8" result="d"/><feFlood flood-color="#FFFFFF"/><feComposite in2="d" operator="in" result="w"/><feMerge><feMergeNode in="w"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#o)">
+  <circle cx="52" cy="58" r="26" fill="#E39B4A" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><circle cx="148" cy="58" r="26" fill="#E39B4A" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <circle cx="54" cy="60" r="12" fill="#F6E3C8"/><circle cx="146" cy="60" r="12" fill="#F6E3C8"/>
+  <ellipse cx="100" cy="110" rx="74" ry="64" fill="#E39B4A" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M100 50 L92 72 L100 80 L108 72 Z M78 56 L74 74 L84 70 Z M122 56 L126 74 L116 70 Z" fill="#2B2520"/>
+  <path d="M28 104 L52 110 L30 120 Z M172 104 L148 110 L170 120 Z M34 132 L56 130 L40 142 Z M166 132 L144 130 L160 142 Z" fill="#2B2520"/>
+  <ellipse cx="100" cy="140" rx="40" ry="28" fill="#FBF8F1"/>
+  <ellipse cx="76" cy="104" rx="6.8" ry="8" fill="#2B2520"/><circle cx="78.5" cy="101" r="2.56" fill="#FBF8F1"/><ellipse cx="124" cy="104" rx="6.8" ry="8" fill="#2B2520"/><circle cx="126.5" cy="101" r="2.56" fill="#FBF8F1"/>
+  <path d="M90 126 Q100 120 110 126 Q104 136 100 137 Q96 136 90 126 Z" fill="#C4635B" stroke="#2B2520" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M100 137 V146 M100 146 Q92 154 84 148 M100 146 Q108 154 116 148" fill="none" stroke="#2B2520" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/></g></svg>

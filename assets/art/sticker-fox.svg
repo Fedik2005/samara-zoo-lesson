@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><defs><filter id="o" x="-25%" y="-25%" width="150%" height="150%"><feMorphology in="SourceAlpha" operator="dilate" radius="8" result="d"/><feFlood flood-color="#FFFFFF"/><feComposite in2="d" operator="in" result="w"/><feMerge><feMergeNode in="w"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs><g filter="url(#o)">
+  <path d="M42 30 L86 70 L52 92 Z" fill="#D9763B" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/><path d="M158 30 L114 70 L148 92 Z" fill="#D9763B" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M42 30 L58 52 L48 60 Z M158 30 L142 52 L152 60 Z" fill="#2B2520"/>
+  <path d="M36 84 Q100 40 164 84 L150 124 Q120 136 100 176 Q80 136 50 124 Z" fill="#D9763B" stroke="#2B2520" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"/>
+  <path d="M100 176 Q80 136 50 124 Q80 120 100 140 Q120 120 150 124 Q120 136 100 176 Z" fill="#FBF8F1" stroke="#2B2520" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+  <ellipse cx="78" cy="98" rx="5.95" ry="7" fill="#2B2520"/><circle cx="80.5" cy="95" r="2.24" fill="#FBF8F1"/><ellipse cx="122" cy="98" rx="5.95" ry="7" fill="#2B2520"/><circle cx="124.5" cy="95" r="2.24" fill="#FBF8F1"/>
+  <path d="M92 160 Q100 154 108 160 Q104 168 100 170 Q96 168 92 160 Z" fill="#2B2520"/></g></svg>

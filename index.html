@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Экскурсия в Самарский зоопарк</title>
+<meta name="description" content="Урок биологии для 8 класса в форме экскурсии по Самарскому зоопарку. Тема: Зоология. Экология. Многообразие животных и их приспособленность к среде обитания.">
+<meta name="theme-color" content="#E9D6AE">
+<link rel="preload" href="assets/fonts/unbounded-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=7">
+</head>
+<body>
+<div class="viewport" id="viewport">
+<div class="stage" id="stage">
+
+<header class="bar" id="bar">
+  <p class="bar__mark">Самарский зоопарк</p>
+  <p class="bar__zone" id="barZone" aria-live="polite">Вход</p>
+  <nav class="bar__route" id="route" aria-label="Маршрут экскурсии"></nav>
+  <div class="bar__tools">
+    <button class="bar__btn" id="btnMap" type="button" aria-haspopup="dialog">Карта</button>
+    <button class="bar__btn" id="btnSound" type="button" aria-pressed="true">Звук</button>
+    <button class="bar__btn" id="btnTeacher" type="button" aria-pressed="false">Учителю</button>
+    <button class="bar__arrow" id="prev" type="button" aria-label="Предыдущий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 L8 12 L15 19"/></svg></button>
+    <button class="bar__arrow" id="next" type="button" aria-label="Следующий слайд"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5 L16 12 L9 19"/></svg></button>
+  </div>
+  <div class="bar__progress" aria-hidden="true"><i id="progress"></i></div>
+</header>
+
+<main class="deck" id="deck">
+
+<!-- 1. ВХОД -->
+<section class="slide s-entrance" id="entrance" aria-label="Вход">
+  <h1 class="entrance__title">Экскурсия в<br>Самарский зоопарк</h1>
+  <p class="entrance__lead">Урок биологии, 8 класс</p>
+  <figure class="entrance__photo">
+    <img src="assets/img/samara-zoo.jpg" alt="Вход в Самарский зоопарк: скульптура и арка с надписью «Зоопарк»">
+    <figcaption>Вход в Самарский зоопарк</figcaption>
+  </figure>
+  <img class="sticker st-1" src="assets/art/sticker-tiger.svg" alt="" aria-hidden="true">
+  <img class="sticker st-2" src="assets/art/sticker-giraffe.svg" alt="" aria-hidden="true">
+  <div class="ticket" id="ticket">
+    <div class="ticket__main">
+      <p class="ticket__name">Входной билет на&nbsp;экскурсию</p>
+      <dl class="ticket__rows">
+        <div><dt>Тема</dt><dd>Зоология. Экология. Многообразие животных и их приспособленность к среде обитания</dd></div>
+        <div><dt>Где</dt><dd>Самарский зоопарк, г. Самара, ул. Ново-Садовая, 146</dd></div>
+        <div><dt>Посетители</dt><dd data-cfg="className">8 класс</dd></div>
+        <div><dt>Экскурсовод</dt><dd data-cfg="teacherName">учитель биологии</dd></div>
+      </dl>
+      <svg class="ticket__code" id="barcode" viewBox="0 0 220 34" preserveAspectRatio="none" aria-hidden="true"></svg>
+    </div>
+    <div class="ticket__stub">
+      <p class="ticket__ctrl">Контроль</p>
+      <button class="btn" id="enter" type="button">Войти</button>
+    </div>
+    <p class="ticket__stamp" aria-hidden="true">Погашен</p>
+  </div>
+</section>
+
+<!-- 2. ПРАВИЛА -->
+<section class="slide s-rules" id="rules" aria-label="Правила посещения">
+  <h2 class="title">Правила посещения</h2>
+  <p class="rules__quote">Сегодня будем не только слушать, но и наблюдать, сравнивать, отвечать на вопросы и работать в команде.</p>
+  <ul class="plaques">
+    <li><img src="assets/art/sticker-owl.svg" alt=""><b>Наблюдаем</b><span>строение, движение, поведение</span></li>
+    <li><img src="assets/art/sticker-giraffe.svg" alt=""><b>Сравниваем</b><span>ищем сходства и отличия</span></li>
+    <li><img src="assets/art/sticker-fox.svg" alt=""><b>Отвечаем</b><span>и объясняем свой ответ</span></li>
+    <li><img src="assets/art/sticker-wolf.svg" alt=""><b>Работаем в&nbsp;команде</b><span>как волчья стая</span></li>
+  </ul>
+</section>
+
+<!-- 3. БИОЛОГИЧЕСКИЙ ПОРТРЕТ -->
+<section class="slide s-portrait" id="portrait" aria-label="Биологический портрет">
+  <div class="pt__side">
+    <h2 class="title">Биологический портрет</h2>
+    <p class="pt__task">Назови своё имя и животное, с которым ты себя ассоциируешь, и одну причину выбора.</p>
+    <div class="pt__card" id="ptCard" aria-live="polite">
+      <div class="pt__empty"><img src="assets/art/sticker-hare.svg" alt=""><p>Нажми на животное, чтобы узнать его суперсилу</p></div>
+    </div>
+    <div class="pt__row">
+      <button class="btn" id="randomBeast" type="button">Случайное животное</button>
+      <p class="pt__count" id="beastCount">Открыто 0 из 20</p>
+    </div>
+    <p class="pt__moral" id="wallMoral" hidden>Особенности животных связаны с их образом жизни.</p>
+  </div>
+  <div class="wall" id="wall"></div>
+</section>
+
+<!-- 4. ВОПРОСЫ СМОТРИТЕЛЯ -->
+<section class="slide s-keeper" id="keeper" aria-label="Вопросы смотрителя">
+  <img class="keeper__art" src="assets/art/keeper.svg" alt="Смотритель зоопарка машет рукой у своей будки">
+  <div class="keeper__side">
+    <h2 class="title">Вопросы смотрителя</h2>
+    <p class="keeper__lead">Сначала предположения. Ответы найдём по ходу экскурсии.</p>
+    <ul class="riddles" id="riddleList"></ul>
+  </div>
+</section>
+
+<!-- 5. ТЕМА И ЦЕЛЬ -->
+<section class="slide s-topic" id="topic" aria-label="Тема урока">
+  <h2 class="title">Тема урока</h2>
+  <p class="topic__text">Зоология. Экология. Многообразие животных и&nbsp;их приспособленность к&nbsp;среде обитания</p>
+  <div class="topic__goal">
+    <h3>Цель</h3>
+    <p>Сформировать первоначальное целостное представление о зоологии и экологии животных, показать многообразие животных, особенности их приспособления к среде обитания и роль в природных сообществах.</p>
+  </div>
+  <img class="sticker st-3" src="assets/art/sticker-owl.svg" alt="" aria-hidden="true">
+  <img class="sticker st-4" src="assets/art/sticker-fish.svg" alt="" aria-hidden="true">
+</section>
+
+<!-- 6. ЗООЛОГИЯ -->
+<section class="slide s-zoology" id="zoology" aria-label="Что изучает зоология">
+  <div class="zl__text">
+    <h2 class="title">Что изучает зоология</h2>
+    <p class="zl__def">Зоология - раздел биологии, изучающий животных, их строение, жизнедеятельность, происхождение, развитие, распространение и взаимоотношения с окружающей средой.</p>
+    <p class="zl__note">Посмотрим на соседа по вольеру - амурского тигра.</p>
+  </div>
+  <figure class="zl__photo">
+    <img src="assets/img/tiger-full.jpg" alt="Амурский тигр идёт по траве, видно всё тело и хвост">
+    <figcaption>Амурский тигр, Panthera tigris altaica</figcaption>
+  </figure>
+</section>
+
+<!-- 7. НАПРАВЛЕНИЯ ЗООЛОГИИ -->
+<section class="slide s-views" id="views" aria-label="Направления зоологии">
+  <h2 class="title">Направления зоологии на&nbsp;примере тигра</h2>
+  <div class="acc" id="acc">
+    <article class="acc__panel is-open" style="--tone:#5B3A22;--tink:#FBF8F1">
+      <button class="acc__tab" type="button" aria-expanded="true">Систематика</button>
+      <div class="acc__body">
+        <p class="acc__what">Классификация</p>
+        <ul class="tax">
+          <li><span>Царство</span> Животные</li><li><span>Тип</span> Хордовые</li><li><span>Класс</span> Млекопитающие</li>
+          <li><span>Отряд</span> Хищные</li><li><span>Семейство</span> Кошачьи</li><li><span>Род</span> Пантеры</li><li><span>Вид</span> Тигр</li>
+        </ul>
+        <img src="assets/img/tiger.jpg" alt="Амурский тигр пьёт воду из пруда" style="object-position:62% 40%">
+      </div>
+    </article>
+    <article class="acc__panel" style="--tone:#7A4E2C;--tink:#FBF8F1">
+      <button class="acc__tab" type="button" aria-expanded="false">Морфология</button>
+      <div class="acc__body">
+        <p class="acc__what">Внешнее строение</p>
+        <p>Рисунок полос у каждого тигра свой, как отпечаток пальца. У амурского тигра самый длинный и густой мех среди тигров: зимой в Приморье бывает ниже −30 °C.</p>
+        <img src="assets/img/tiger-walk.jpg" alt="Морда амурского тигра с полосами" style="object-position:50% 35%">
+      </div>
+    </article>
+    <article class="acc__panel" style="--tone:#9A6A3E;--tink:#FBF8F1">
+      <button class="acc__tab" type="button" aria-expanded="false">Анатомия</button>
+      <div class="acc__body">
+        <p class="acc__what">Внутреннее строение</p>
+        <p>Скелет показывает, как устроено тело хищника: мощные челюсти с длинными клыками, гибкий позвоночник и сильные кости лап. Когти втягиваются и не тупятся при ходьбе.</p>
+        <img src="assets/img/tiger-skeleton.jpg" alt="Скелет тигра в музейной витрине" style="object-position:50% 40%">
+      </div>
+    </article>
+    <article class="acc__panel" style="--tone:#B98A57;--tink:#2B2520">
+      <button class="acc__tab" type="button" aria-expanded="false">Физиология</button>
+      <div class="acc__body">
+        <p class="acc__what">Функции организма</p>
+        <p>В темноте тигр видит намного лучше нас. За сетчаткой глаза лежит отражающий слой, поэтому глаза кошек светятся ночью в лучах фар.</p>
+        <img src="assets/img/tiger-eye.jpg" alt="Глаз тигра крупным планом" style="object-position:55% 45%">
+      </div>
+    </article>
+    <article class="acc__panel" style="--tone:#D2B084;--tink:#2B2520">
+      <button class="acc__tab" type="button" aria-expanded="false">Этология</button>
+      <div class="acc__body">
+        <p class="acc__what">Поведение</p>
+        <p>Тигр охотится в одиночку из засады и метит свой участок. Тигрица около двух лет растит тигрят и учит их охотиться.</p>
+        <img src="assets/img/tiger-mother.jpg" alt="Тигрица с тигрёнком на снегу" style="object-position:45% 50%">
+      </div>
+    </article>
+    <article class="acc__panel" style="--tone:#E8D3AE;--tink:#2B2520">
+      <button class="acc__tab" type="button" aria-expanded="false">Экология животных</button>
+      <div class="acc__body">
+        <p class="acc__what">Связи со средой</p>
+        <p>Амурский тигр живёт в лесах Приморья и Хабаровского края, охотится на кабанов и оленей и держит их численность в равновесии. По учёту 2022 года в России около 750 амурских тигров.</p>
+        <img src="assets/img/tiger-snow.jpg" alt="Молодой амурский тигр бежит по снегу" style="object-position:50% 45%">
+      </div>
+    </article>
+  </div>
+</section>
+
+<!-- 8. МНОГООБРАЗИЕ -->
+<section class="slide s-diversity" id="diversity" aria-label="Многообразие животных">
+  <div class="dv__side">
+    <h2 class="title">Многообразие животных</h2>
+    <div class="dv__figs">
+      <p><b>≈ 1,5 млн</b>видов животных уже описали учёные</p>
+      <p><b>≈ 7,8 млн</b>может быть всего по оценке учёных</p>
+    </div>
+    <p class="dv__hint">Если уложить все описанные виды в 1000 клеток. Нажмите на группу:</p>
+    <div class="legend" id="legend"></div>
+    <p class="dv__out" id="cellsOut" aria-live="polite">Позвоночных меньше 5%. Тигр и мы с вами в четырёх клетках из тысячи.</p>
+  </div>
+  <svg class="cells" id="cells" viewBox="0 0 400 250" role="img" aria-label="Тысяча клеток по группам животных: две трети занимают насекомые, млекопитающие занимают четыре клетки"></svg>
+</section>
+
+<!-- 9. СТРОЕНИЕ И УСЛОВИЯ ЖИЗНИ -->
+<section class="slide s-adapt" id="adapt" aria-label="Строение связано с условиями жизни">
+  <h2 class="title">Строение связано с условиями жизни</h2>
+  <ul class="adapt">
+    <li><img src="assets/img/tuna.jpg" alt="Косяк тунцов под водой" style="object-position:50% 40%"><b>Рыбы</b><span>Обтекаемая форма тела облегчает движение в воде</span></li>
+    <li><img src="assets/img/stork.jpg" alt="Белый аист в полёте" style="object-position:55% 50%"><b>Птицы</b><span>Крылья птиц обеспечивают полёт</span></li>
+    <li><img src="assets/img/arctic-fox-2.jpg" alt="Песец свернулся в снегу" style="object-position:40% 55%"><b>Млекопитающие</b><span>Густой мех уменьшает теплоотдачу</span></li>
+    <li><img src="assets/img/moth.jpg" alt="Берёзовая пяденица на коре дерева" style="object-position:50% 50%"><b>Насекомые</b><span>Покровительственная окраска может снижать вероятность обнаружения животного</span></li>
+  </ul>
+</section>
+
+<!-- 10. ЭКОЛОГИЯ -->
+<section class="slide s-ecology" id="ecology" aria-label="Экология животных">
+  <h2 class="title">Экология животных</h2>
+  <p class="ec__lead">Экология изучает связи организмов со средой: как на животных влияют условия неживой природы и другие организмы.</p>
+  <div class="scheme">
+    <p class="scheme__node">Организм</p><p class="scheme__arrow" aria-hidden="true">⇄</p>
+    <p class="scheme__node">Среда</p><p class="scheme__arrow" aria-hidden="true">→</p>
+    <p class="scheme__node scheme__node--hi">Приспособление</p>
+  </div>
+  <div class="factors">
+    <div class="factors__col">
+      <h3>Абиотические факторы</h3>
+      <ul class="chips"><li>температура</li><li>свет</li><li>вода</li><li>влажность</li></ul>
+    </div>
+    <div class="factors__col factors__col--bio">
+      <h3>Биотические факторы</h3>
+      <ul class="chips"><li>другие организмы</li></ul>
+      <p>Например, волк для зайца</p>
+    </div>
+  </div>
+  <img class="sticker st-12" src="assets/art/sticker-wolf.svg" alt="" aria-hidden="true">
+  <img class="sticker st-13" src="assets/art/sticker-hare.svg" alt="" aria-hidden="true">
+</section>
+
+<!-- 11. ЛИСА И ТЕРМОМЕТР -->
+<section class="slide s-fox" id="fox" aria-label="Лиса и термометр">
+  <h2 class="title">Покрутите термометр</h2>
+  <figure class="fox__end fox__end--hot"><img src="assets/img/fennec.jpg" alt="Фенеки с огромными ушами" style="object-position:30% 50%"><figcaption>Фенек, Сахара</figcaption></figure>
+  <div class="fox__center">
+    <svg class="fox__svg" id="foxSvg" viewBox="0 0 400 360" role="img" aria-label="Нарисованная лиса, у которой меняются уши и мех"></svg>
+    <label class="thermo">
+      <span class="thermo__label">Температура воздуха</span>
+      <input type="range" id="temp" min="-50" max="50" step="1" value="35" aria-label="Температура воздуха" aria-describedby="foxText">
+      <output id="tempOut" for="temp">+35 °C</output>
+    </label>
+  </div>
+  <figure class="fox__end fox__end--cold"><img src="assets/img/arctic-fox-2.jpg" alt="Песец свернулся клубком в снегу"><figcaption>Песец, тундра</figcaption></figure>
+  <p class="fox__info" id="foxText" aria-live="polite"></p>
+</section>
+
+<!-- 12. ПИНГВИНАРИЙ -->
+<section class="slide s-penguin" id="penguin" aria-label="Пингвинарий">
+  <div class="pg__side">
+    <h2 class="title">Пингвинарий</h2>
+    <p class="pg__lead">Крылья пингвина преобразованы в ласты, а тело стало обтекаемым, как у рыбы.</p>
+    <div class="answer">
+      <p class="answer__q">Почему у рыб обтекаемая форма тела?</p>
+      <p>Обтекаемая форма тела облегчает движение в воде. Вода примерно в 800 раз плотнее воздуха, и тело с узким носом раздвигает её с наименьшим сопротивлением.</p>
+    </div>
+  </div>
+  <div class="pg__main">
+    <img class="pg__photo" src="assets/img/penguin.jpg" alt="Папуанский пингвин плывёт под водой">
+    <div class="race">
+      <div class="race__head"><h3>Гонка форм</h3><button class="btn" id="raceGo" type="button">Старт</button></div>
+      <div class="race__lanes" id="race">
+        <div class="lane" data-cd="1.05"><span class="lane__name">Брусок</span><svg class="lane__shape" viewBox="0 0 120 60" aria-hidden="true"><rect x="10" y="12" width="100" height="36"/></svg><span class="lane__time"></span></div>
+        <div class="lane" data-cd="0.47"><span class="lane__name">Шар</span><svg class="lane__shape" viewBox="0 0 120 60" aria-hidden="true"><circle cx="60" cy="30" r="24"/></svg><span class="lane__time"></span></div>
+        <div class="lane" data-cd="0.04"><span class="lane__name">Торпеда</span><svg class="lane__shape" viewBox="0 0 120 60" aria-hidden="true"><path d="M4 30 C 20 10, 70 8, 116 30 C 70 52, 20 50, 4 30 Z"/></svg><span class="lane__time"></span></div>
+      </div>
+      <p class="race__out" id="raceOut" aria-live="polite">Одинаковая сила толкает три фигуры. Какая приплывёт первой?</p>
+    </div>
+  </div>
+</section>
+
+<!-- 13. ЖИРАФНИК -->
+<section class="slide s-giraffe" id="giraffe" aria-label="Жирафник">
+  <img class="gf__photo" src="assets/img/giraffe.jpg" alt="Жираф среди деревьев" style="object-position:50% 25%">
+  <div class="gf__text">
+    <h2 class="title">Жирафник</h2>
+    <p class="gf__lead">Длинная шея помогает добывать корм на высоте и использовать определённые пищевые ресурсы.</p>
+    <ul class="gf__facts">
+      <li><b>7</b><span>позвонков в шее, как у человека</span></li>
+      <li><b>45 см</b><span>длина языка</span></li>
+      <li><b>5,5 м</b><span>рост взрослого самца</span></li>
+    </ul>
+    <label class="reach__ctrl"><span>Высота</span><input type="range" id="neck" min="1" max="5.5" step="0.1" value="1" aria-label="Высота, до которой тянется жираф" aria-describedby="reachOut"><output id="neckOut" for="neck">1,0 м</output></label>
+    <p class="reach__out" id="reachOut" aria-live="polite"></p>
+  </div>
+  <svg class="reach__svg" id="reachSvg" viewBox="0 0 620 540" role="img" aria-label="Схема: акация, импала, куду и жираф, который тянется к листьям"></svg>
+</section>
+
+<!-- 14. ТЕРРАРИУМ -->
+<section class="slide s-terrarium" id="terrarium" aria-label="Террариум">
+  <div class="cm__side">
+    <h2 class="title">Террариум: найди животное</h2>
+    <p class="cm__lead">Кто-то прячется на фото. Нажмите на него.</p>
+    <div class="camo__tabs" role="tablist" id="camoTabs"></div>
+    <div class="camo__status"><p class="camo__timer" id="camoTimer">0:00</p><p class="camo__msg" id="camoMsg" aria-live="polite">Ищем...</p></div>
+    <div class="camo__btns"><button class="btn btn--light" id="camoGive" type="button">Показать</button><button class="btn btn--line" id="camoNext" type="button">Следующее фото</button></div>
+    <div class="answer answer--light">
+      <p class="answer__q">Зачем тигру полосы?</p>
+      <p>Это покровительственная окраска: полосы разбивают силуэт среди стволов и теней. Олени и кабаны плохо отличают оранжевый от зелёного, и тигр для них сливается с листвой.</p>
+    </div>
+  </div>
+  <div class="camo__frame" id="camoFrame">
+    <img id="camoImg" src="assets/img/gecko.jpg" alt="Фотография с замаскированным животным" draggable="false">
+    <svg class="camo__marks" id="camoMarks" aria-hidden="true"></svg>
+  </div>
+</section>
+
+<!-- 15. ВЗАИМОДЕЙСТВИЯ -->
+<section class="slide s-links" id="links" aria-label="Взаимодействия организмов">
+  <h2 class="title">Взаимодействия организмов</h2>
+  <div class="links">
+    <article class="link">
+      <div class="link__pics"><img src="assets/img/wolf.jpg" alt="Волк" style="object-position:35% 50%"><img src="assets/img/hare.jpg" alt="Заяц-беляк" style="object-position:60% 50%"></div>
+      <h3>Хищничество</h3><p>Один организм ловит и поедает другой. Волк и заяц.</p>
+    </article>
+    <article class="link">
+      <div class="link__pics link__pics--art"><img src="assets/art/sticker-wolf.svg" alt="Волк"><img src="assets/art/sticker-hare.svg" alt="Заяц" class="link__mid"><img src="assets/art/sticker-fox.svg" alt="Лиса"></div>
+      <h3>Конкуренция</h3><p>Два вида используют один пищевой ресурс. Волк и лиса охотятся на зайца.</p>
+    </article>
+    <article class="link">
+      <div class="link__pics"><img src="assets/img/clownfish.jpg" alt="Рыба-клоун в щупальцах актинии" style="object-position:50% 40%"></div>
+      <h3>Мутуализм</h3><p>Взаимовыгодное взаимодействие организмов. Рыба-клоун и актиния.</p>
+    </article>
+  </div>
+  <p class="links__out">Виды связаны пищевыми и другими экологическими отношениями.</p>
+</section>
+
+<!-- 16. СТАНЬ ХИЩНИКОМ -->
+<section class="slide s-school" id="school" aria-label="Стань хищником">
+  <canvas id="schoolCanvas" class="school__canvas" aria-label="Косяк рыб убегает от хищника"></canvas>
+  <div class="school__ui">
+    <h2 class="title">Стань хищником</h2>
+    <p>Ведите мышкой или пальцем и поймайте рыбу. Косяк для того и нужен: хищнику трудно выбрать одну цель.</p>
+    <p class="school__score" id="schoolScore" aria-live="polite">Поймано: 0</p>
+  </div>
+</section>
+
+<!-- 17. ОПРЕДЕЛИ ВЗАИМОДЕЙСТВИЕ -->
+<section class="slide s-relgame" id="relgame" aria-label="Определи взаимодействие">
+  <div class="rg__head"><h2 class="title">Определи взаимодействие</h2><p class="rg__score" id="relScore" aria-live="polite">Верно 0 из 6</p></div>
+  <ul class="rel__list" id="relList"></ul>
+</section>
+
+<!-- 18. ПИЩЕВЫЕ СВЯЗИ -->
+<section class="slide s-foodchain" id="foodchain" aria-label="Пищевые связи">
+  <div class="fc__side">
+    <h2 class="title">Пищевые связи</h2>
+    <ol class="chain">
+      <li class="chain__plant"><b>Растения</b><span>трава, кора, побеги</span></li>
+      <li><img src="assets/img/hare.jpg" alt="" style="object-position:60% 50%"><b>Заяц-беляк</b></li>
+      <li><img src="assets/img/wolf.jpg" alt="" style="object-position:35% 50%"><b>Волк</b></li>
+    </ol>
+    <div class="answer">
+      <p class="answer__q">Почему исчезновение одного вида может повлиять на другие?</p>
+      <p>Виды связаны пищевыми связями. Если исчезнет хищник, может увеличиться численность некоторых видов-жертв и измениться структура пищевых связей.</p>
+    </div>
+  </div>
+  <div class="model">
+    <div class="model__top"><h3>Модель леса</h3><div class="model__btns"><button class="btn" id="simWolves" type="button" aria-pressed="false">Убрать волков</button><button class="btn btn--line" id="simReset" type="button">Сначала</button></div></div>
+    <svg id="simSvg" viewBox="0 0 640 330" role="img" aria-label="График численности растений, зайцев и волков"></svg>
+    <ul class="model__legend"><li><i style="background:#4C7A3E"></i>Растения</li><li><i style="background:#9A8F84"></i>Зайцы</li><li><i style="background:#2B2520"></i>Волки</li></ul>
+    <p class="model__out" id="simOut" aria-live="polite">Волки, зайцы и растения в равновесии.</p>
+  </div>
+</section>
+
+<!-- 19. КИНОЗАЛ -->
+<section class="slide s-cinema" id="cinema" aria-label="Кинозал">
+  <img class="curtain curtain--l" src="assets/art/curtain.svg" alt="" aria-hidden="true">
+  <img class="curtain curtain--r" src="assets/art/curtain.svg" alt="" aria-hidden="true">
+  <div class="cn__side">
+    <h2 class="title">Кинозал</h2>
+    <p class="cn__lead">Фильм снят в Самарском зоопарке. Для каждого животного определите, если возможно:</p>
+    <ul class="mission">
+      <li>группу</li><li>особенности строения или поведения</li><li>тип питания</li><li>заметное приспособление</li>
+    </ul>
+    <img class="sticker st-5" src="assets/art/sticker-penguin.svg" alt="" aria-hidden="true">
+  </div>
+  <div class="player" id="player">
+    <video id="zooVideo" playsinline preload="metadata"></video>
+    <div class="player__empty" id="playerEmpty" hidden>
+      <img src="assets/art/sticker-fish.svg" alt="">
+      <p>Здесь будет фильм из Самарского зоопарка</p>
+    </div>
+    <div class="player__stop" id="playerStop" hidden>
+      <p class="player__stop-q" id="stopQ"></p>
+      <div class="player__stop-btns"><button class="btn" id="stopCard" type="button">Открыть табличку</button><button class="btn btn--line" id="stopGo" type="button">Смотреть дальше</button></div>
+    </div>
+    <div class="player__bar">
+      <button class="player__play" id="vPlay" type="button">Смотреть</button>
+      <div class="player__track" id="vTrack"><div class="player__fill" id="vFill"></div></div>
+      <p class="player__time" id="vTime">0:00</p>
+      <button class="player__full" id="vFull" type="button">Во весь экран</button>
+    </div>
+  </div>
+  <div class="audio" id="audioBox" hidden><p id="audioTitle">Аудиодорожка</p><audio id="zooAudio" controls preload="none"></audio></div>
+</section>
+
+<!-- 20. ТАБЛИЧКИ -->
+<section class="slide s-signs" id="signs" aria-label="Таблички у вольеров">
+  <h2 class="title">Таблички у вольеров</h2>
+  <div class="signs" id="signsGrid"></div>
+  <p class="signs__quote">Каждый вид занимает своё место в природе и связан с другими организмами. Поэтому изучение животных помогает понять, как устроены экосистемы и почему важно сохранять биоразнообразие.</p>
+</section>
+
+<!-- 21. ЗАЧЕМ НУЖНЫ ЗООПАРКИ -->
+<section class="slide s-zoos" id="zoos" aria-label="Зачем нужны зоопарки">
+  <img class="zoos__photo" src="assets/img/przewalski.jpg" alt="Лошадь Пржевальского у деревянной изгороди">
+  <div class="zoos__text">
+    <h2 class="title">Зачем нужны зоопарки</h2>
+    <ul class="zoos__list">
+      <li><b>Разведение редких видов.</b> Лошадь Пржевальского исчезла в дикой природе к концу 1960-х. Её сохранили зоопарки, а потом вернули в степи, в том числе в Оренбургскую область.</li>
+      <li><b>Научная работа.</b> В зоопарках изучают поведение, питание и здоровье животных.</li>
+      <li><b>Экологическое просвещение.</b> Экскурсии вроде нашей учат беречь природу.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 22. ВИКТОРИНА -->
+<section class="slide s-quiz" id="quiz" aria-label="Викторина">
+  <div class="qz__head"><h2 class="title">Викторина</h2><p>8 вопросов по ролику и экскурсии. За верный ответ команда получает 1 балл.</p></div>
+  <div class="qz__app" id="quizApp"></div>
+</section>
+
+<!-- 23. ТРИ ОТКРЫТИЯ -->
+<section class="slide s-reflect" id="reflect" aria-label="Рефлексия «Три открытия»">
+  <h2 class="title">Рефлексия «Три открытия»</h2>
+  <ul class="three">
+    <li><img src="assets/art/sticker-owl.svg" alt=""><b>Один новый факт</b><span>Что я узнал сегодня?</span></li>
+    <li><img src="assets/art/sticker-tiger.svg" alt=""><b>Одно наиболее интересное животное</b><span>Кто запомнился и почему?</span></li>
+    <li><img src="assets/art/sticker-fox.svg" alt=""><b>Один вопрос, который остался</b><span>Что хочу изучить подробнее?</span></li>
+  </ul>
+  <p class="three__note">Ответы можно назвать устно или записать на стикерах.</p>
+</section>
+
+<!-- 24. ИТОГ -->
+<section class="slide s-summary" id="summary" aria-label="Итог урока">
+  <h2 class="title">Итог урока</h2>
+  <ul class="sum">
+    <li>Животные различаются по&nbsp;строению и&nbsp;образу жизни,</li>
+    <li>приспособлены к&nbsp;условиям среды</li>
+    <li>и связаны между собой в&nbsp;экосистемах.</li>
+  </ul>
+  <img class="sticker st-6" src="assets/art/sticker-giraffe.svg" alt="" aria-hidden="true">
+  <img class="sticker st-7" src="assets/art/sticker-penguin.svg" alt="" aria-hidden="true">
+</section>
+
+<!-- 25. СПАСИБО -->
+<section class="slide s-bye" id="bye" aria-label="Задание на дом">
+  <h2 class="bye__title">Спасибо за&nbsp;экскурсию!</h2>
+  <div class="hw">
+    <p class="hw__tag">Задание на дом</p>
+    <p class="hw__text">Выберите животное и найдите 3 факта о его адаптациях и экологической роли.</p>
+  </div>
+  <p class="bye__where">Самарский зоопарк: г. Самара, ул. Ново-Садовая, 146</p>
+  <p class="bye__stamps" id="byeStamps">Штампов в паспорте: 0 из 15</p>
+  <div class="bye__btns">
+    <button class="btn btn--light" id="btnMap2" type="button">Карта зоопарка</button>
+    <a class="btn btn--line" href="print.html" target="_blank" rel="noopener">Материалы для печати</a>
+    <button class="btn btn--line" id="restart" type="button">Начать заново</button>
+  </div>
+  <img class="sticker st-8" src="assets/art/sticker-tiger.svg" alt="" aria-hidden="true">
+  <img class="sticker st-9" src="assets/art/sticker-owl.svg" alt="" aria-hidden="true">
+  <img class="sticker st-10" src="assets/art/sticker-hare.svg" alt="" aria-hidden="true">
+  <figure class="qr"><img src="assets/art/qr.svg" alt="QR-код сайта экскурсии"><figcaption>Экскурсия на&nbsp;телефоне</figcaption></figure>
+</section>
+
+</main>
+
+<!-- КАРТА -->
+<div class="map" id="map" role="dialog" aria-modal="true" aria-labelledby="mapTitle" hidden>
+  <div class="map__head"><h2 class="title" id="mapTitle">Карта Самарского зоопарка</h2><p class="map__count" id="mapCount">Штампы: 0 из 15</p><button class="btn btn--light" id="mapClose" type="button">Закрыть</button></div>
+  <svg class="map__svg" id="mapSvg" viewBox="0 0 1000 700" role="group" aria-label="Нажмите на вольер, чтобы перейти к нему"></svg>
+</div>
+
+<!-- ПАНЕЛЬ УЧИТЕЛЯ -->
+<aside class="teacher" id="teacher" aria-label="Панель учителя" hidden>
+  <div class="teacher__top"><p class="teacher__stage" id="tStage"></p><button class="teacher__x" id="tClose" type="button">Скрыть</button></div>
+  <p class="teacher__stop" id="tStop"></p>
+  <div class="teacher__clock">
+    <div><p class="teacher__lbl">Урок</p><p class="teacher__time" id="tLesson">00:00</p></div>
+    <div><p class="teacher__lbl">По плану</p><p class="teacher__time teacher__time--plan" id="tWindow"></p></div>
+    <button class="btn btn--light" id="tStart" type="button">Старт урока</button>
+  </div>
+  <dl class="teacher__notes"><dt>Что делать</dt><dd id="tDo"></dd><dt>Ключевая фраза</dt><dd id="tSay"></dd><dt>Подсказка</dt><dd id="tTip"></dd></dl>
+  <p class="teacher__media" id="tMedia"></p>
+  <p class="teacher__links"><a href="credits.html" target="_blank" rel="noopener">Источники и авторы фото</a></p>
+</aside>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+<canvas class="confetti" id="confetti" aria-hidden="true" hidden></canvas>
+</div>
+<div class="rotate" id="rotateHint" hidden><p>Поверните телефон горизонтально</p><button type="button" id="rotateOk">Понятно</button></div>
+</div>
+
+<script src="js/config.js?v=7"></script>
+<script src="js/data.js?v=7"></script>
+<script src="js/sound.js?v=7"></script>
+<script src="js/app.js?v=7"></script>
+<script src="js/stations.js?v=7"></script>
+<script src="js/quiz.js?v=7"></script>
+</body>
+</html>
