@@ -439,6 +439,12 @@ input[type="range"]:active::-webkit-slider-thumb { transform: scale(1.15); }
 .player__empty p { font-family: var(--font-display); font-weight: 700; font-size: 24px; max-width: 18ch; }
 .player__stop { position: absolute; left: 14px; right: 14px; bottom: 70px; background: var(--ochre); color: var(--ink); border-radius: 16px; padding: 16px 18px; display: grid; gap: 10px; animation: rise 400ms var(--ease-out) both; }
 .player__stop[hidden], .player__empty[hidden] { display: none; }
+.player.is-portrait { width: 470px; justify-self: center; }
+.player.is-portrait video { aspect-ratio: 3 / 4; height: 528px; object-fit: contain; }
+.player.is-portrait .player__bar { grid-template-columns: auto 1fr auto; }
+.player.is-portrait .player__full { display: none; }
+.player__stop-tag { font-weight: 800; font-size: 13px; color: var(--clay-dark); }
+.player__stop .btn[hidden] { display: none; }
 .player__stop-q { font-family: var(--font-display); font-weight: 700; font-size: 20px; line-height: 1.2; }
 .player__stop-btns { display: flex; gap: 8px; }
 .player__stop .btn { min-height: 38px; font-size: 14.5px; padding: 0 16px; }

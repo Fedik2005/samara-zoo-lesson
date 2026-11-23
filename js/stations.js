@@ -429,6 +429,7 @@
       v.addEventListener("error", noVideo);
       v.addEventListener("loadedmetadata", () => {
         empty.hidden = true; play.disabled = false;
+        if (v.videoHeight > v.videoWidth) $("#player").classList.add("is-portrait");
         stops.forEach((s) => { if (s.time < v.duration) track.insertAdjacentHTML("beforeend", `<span class="player__mark" style="left:${(s.time / v.duration) * 100}%" title="${esc(s.question)}"></span>`); });
         time.textContent = "0:00 / " + fmt(v.duration);
         App.mediaNote = `Видео подключено: ${fmt(v.duration)}, остановок с вопросами: ${stops.filter((s) => s.time < v.duration).length}.`; App.renderTeacher();
@@ -442,12 +443,12 @@
       if (!v.duration) return;
       fill.style.width = (v.currentTime / v.duration) * 100 + "%"; time.textContent = fmt(v.currentTime) + " / " + fmt(v.duration);
       const s = stops.find((x) => !fired.has(x.time) && v.currentTime >= x.time && v.currentTime < x.time + 1.5);
-      if (s) { fired.add(s.time); v.pause(); cur = s; $("#stopQ").textContent = s.question; stopBox.hidden = false; Sound.play("tick"); }
+      if (s) { fired.add(s.time); v.pause(); cur = s; $("#stopTag").textContent = "Вопрос классу"; $("#stopQ").textContent = s.question; $("#stopCard").hidden = !animals[s.animal]; stopBox.hidden = false; Sound.play("tick"); }
     });
     v.addEventListener("seeked", () => stops.forEach((s) => { if (s.time > v.currentTime) fired.delete(s.time); }));
     track.addEventListener("click", (e) => { if (!v.duration) return; const r = track.getBoundingClientRect(); v.currentTime = ((e.clientX - r.left) / r.width) * v.duration; });
     $("#stopGo").addEventListener("click", () => { stopBox.hidden = true; v.play(); });
-    $("#stopCard").addEventListener("click", () => { if (!cur) return; const a = animals[cur.animal]; if (a) { $("#stopQ").textContent = `${a.name}. ${a.group}. ${a.trick}.`; flipSign(cur.animal, true); } });
+    $("#stopCard").addEventListener("click", () => { if (!cur) return; const a = animals[cur.animal]; if (a) { $("#stopTag").textContent = "Табличка у вольера"; $("#stopQ").textContent = `${a.name}. ${a.group}. ${a.trick}.`; $("#stopCard").hidden = true; flipSign(cur.animal, true); } });
     $("#vFull").addEventListener("click", () => { const p = $("#player"); if (!document.fullscreenElement) p.requestFullscreen && p.requestFullscreen().catch(() => {}); else document.exitFullscreen(); });
     App.whenSlide(v, null, () => { if (!v.paused) v.pause(); });
     const au = CFG.audio || {};
